@@ -27,12 +27,11 @@ Este proyecto es una aplicación Node.js que utiliza Express.js para crear una A
 ├── app.js
 ├── config.js
 ├── uploader.js
-├── src
-│   ├──routes
-│   │  ├── productsRoutes.js
-│   │  └── cartsRouter.js
-│   ├──public
-    │  └── uploads
+├──routes
+│  ├── productsRoutes.js
+│  └── cartsRouter.js
+├──public
+   └── uploads
 ```
 
 ---
