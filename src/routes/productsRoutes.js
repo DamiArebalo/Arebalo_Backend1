@@ -171,7 +171,7 @@ const midExists = (req, res,next) =>{
 
 //POST --> Agregar Productos
 router.post('/',midVal,midExists,uploader.single('thumbnail'),(req,res) =>{
-    console.log(req.body.description);
+    
     const datoFormu = req.body
     //funcion para crear id
     const maxId = Math.max(...products.map(e => +e.id));
