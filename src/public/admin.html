@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    
+</head>
+<body>
+    <form action="../api/products" method="post" enctype="multipart/form-data">
+        <div class="left-column">
+            <div class="contendor-img">
+                <input class="dato" type="file" id="thumbnail" name="thumbnail" placeholder="Ingresa Imagen" accept="image/*">
+                <div id="preview-img" class="preview-img">
+                    <!--PREVIEW DE IMG POR JS-->
+                </div>   
+            </div>
+            <input class="dato" type="text" id="title" name="title" placeholder="Nombre del producto">
+
+        </div>
+        <div class="right-column">
+            <input class="dato"type="text" id="description" name="description" placeholder="Descripción">
+            <input class="dato" type="text" id="code" name="code"  placeholder="Codigo Del Producto">
+            <input class="dato" type="number" id="priceList" name="priceList" placeholder="Precio del producto">
+            <input class="dato"type="number" id="stock" name="stock" placeholder="Stock Inicial">
+            
+            <label for="categoria">Categoría:</label>
+            <select class="dato"id="category" name="category">
+                <option value="fisico">Botiquin</option>
+                <option value="frecuente">Fisico</option>
+                <option value="aromaterapia">Aromaterapia</option>
+            </select>
+
+            <button class="add-products" type="submit" id="agregarProd">Add Products</button>
+        </div>
+    </form>
+    
+</body>
+</html>
