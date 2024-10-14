@@ -1,0 +1,30 @@
+<div class="container">
+    <h1>LISTA DE PRODUCTOS</h1>
+
+    <ul>
+        
+        {{#each products}}
+            <li>
+                <span>{{this.code}}</span>
+                <span>{{this.title}}</span>
+                <span>{{this.description}}</span>
+                <span>${{this.priceList}}</span>
+            </li>
+        {{/each}}
+    </ul>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script type="module">
+    const url = "";
+    const option = {};
+    const socketClient = io(url,option);
+
+    socketClient.on("connect", () => {
+        console.log(`connected to ${url}`);
+    });
+
+
+</script>

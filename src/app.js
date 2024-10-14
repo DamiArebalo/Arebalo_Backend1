@@ -5,6 +5,9 @@ import cartsRouter from './routes/cartsRouter.js';
 
 import handlebars from 'express-handlebars';
 import viewsRouter from './routes/viewsRouter.js';
+import {Server} from 'socket.io';
+
+import { create } from 'express-handlebars'
 
 const app = express();
 
@@ -12,18 +15,28 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
+
+
 /**
  * Indicamos a Express que vamos a estasr utilizando Handlebars
  * como motor de plantillas, y configuramos la ruta donde debe buscarlas
  */
-app.engine('handlebars', handlebars.engine());
+
+const hbs = create({
+    extname: '.handlebars',
+    defaultLayout: 'main',
+    helpers: {
+        json: (context) => {
+            return JSON.stringify(context);
+        }
+    }
+});
+
+app.engine('handlebars', hbs.engine);
 app.set('views', `${config.DIRNAME}/views`);
 app.set('view engine', 'handlebars');
 
-/**
- * Por último, activamos el prefijo bajo el cual servir las plantillas,
- * de la misma forma que lo hemos hecho para users y para los contenidos estáticos
- */
+
 app.use('/views', viewsRouter);
 
 
