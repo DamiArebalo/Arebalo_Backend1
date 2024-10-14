@@ -16,7 +16,7 @@
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.1/dist/sweetalert2.all.min.js"></script>
 <script type="module">
     const url = "";
     const option = {};
@@ -24,6 +24,15 @@
 
     socketClient.on("connect", () => {
         console.log(`connected to ${url}`);
+
+        Swal.fire{
+            title: 'Conectado', 
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            showCancelButton: false,
+            timer: 2000
+        }
+        }
     });
 
 
