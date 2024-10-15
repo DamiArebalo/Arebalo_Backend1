@@ -2,7 +2,7 @@ import express from 'express';
 import productRoutes from './routes/productsRoutes.js';
 import config from './config.js';
 import cartsRouter from './routes/cartsRouter.js';
-import { products, midVal, midExists , Product } from './routes/productsRoutes.js';
+
 
 import handlebars from 'express-handlebars';
 import viewsRouter from './routes/viewsRouter.js';
@@ -55,7 +55,6 @@ socketServer.on('connection', (socket)=>{
  console.log(`cliente activo id: ${socket.id}`);
  socketServer.on('addProduct', (newProduct) => {
     console.log(newProduct.id);
-    
     
 
 
