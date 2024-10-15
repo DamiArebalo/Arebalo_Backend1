@@ -1,4 +1,36 @@
 <div class="container">
+    <div class="container">
+        <h1>Agregar Productos</h1>
+        <form action="./realtimeproducts" method="POST" id="productForm">
+            <label for="code">Código</label>
+            <input type="text" id="code" name="code" required>
+        
+            <label for="title">Título</label>
+            <input type="text" id="title" name="title" required>
+            
+            <label for="priceList">Precio</label>
+            <input type="text" id="priceList" name="priceList" required>
+            
+            <label for="description">Descripción</label>
+            <input type="text" id="description" name="description" required>
+            
+            
+            <label for="stock">Stock</label>
+            <input type="text" id="stock" name="stock" required>
+            
+            <label for="category">Categoría</label>
+            <select id="category" name="category" required>
+                <option value="botiquin">Botiquín</option>
+                <option value="aromaterapia">Aromaterapia</option>
+                <option value="frecuente">Frecuente</option>
+            </select>
+            
+    
+            
+            <input type="hidden" id="status" name="status" value="true">
+            
+            <button type="submit" id="submitBtn">Agregar Producto</button>
+        </form>
     <h1>LISTA DE PRODUCTOS</h1>
 
     <ul>
@@ -21,19 +53,25 @@
     const url = "";
     const option = {};
     const socketClient = io(url,option);
+    
+    
 
     socketClient.on("connect", () => {
         console.log(`connected to ${url}`);
 
-        Swal.fire{
-            title: 'Conectado', 
-            icon: 'success',
-            confirmButtonText: 'Aceptar',
-            showCancelButton: false,
-            timer: 2000
-        }
-        }
+        socketClient.on('newProduct', (product) => {
+        console.log('Nuevo producto agregado:', product);
+        
+        const productList = document.getElementById('productList');
+            const newProductElement = document.createElement('li');
+            newProductElement.innerHTML = `
+                <span class="product-name">${product.title}</span>
+                <span class="product-price">$${product.priceList}</span>
+            `;
+            productList.appendChild(newProductElement);
+        });
     });
-
+        
+    
 
 </script>

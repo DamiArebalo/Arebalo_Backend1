@@ -21,7 +21,10 @@ class Product{
 
 
 
-}
+};
+
+export { Product };
+
 //Array incial de productos agregando elementos necesarios para mi proyecto final
 const products = [
     {   
@@ -182,6 +185,7 @@ router.post('/',midVal,midExists,uploader.single('thumbnail'),(req,res) =>{
     res.send( console.log(`Producto ${datoFormu.title} Agregado correctamente`));
 });
 
+export {validateProducts, midVal, midExists };
 
 
 router.put('/:id', (req, res) => {
@@ -228,4 +232,5 @@ router.delete('/:id', (req, res) => {
 
 
 
-export default router;
+export default router ;
+
