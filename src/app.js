@@ -54,12 +54,9 @@ const socketServer = new Server(httpServer);
 socketServer.on('connection', (socket)=>{
  console.log(`cliente activo id: ${socket.id}`);
  socketServer.on('addProduct', (newProduct) => {
-    console.log(newProduct.id);
-    
-
-
+ 
     socketServer.emit('productAdded', newProduct);
-    //console.log(products);
+   
  });
 });
 
