@@ -3,7 +3,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    color: #333;
+    color: #03020298;
 }
 .container {
     max-width: 800px;
@@ -31,7 +31,7 @@ li {
     align-items: center;
 }
 li:nth-child(odd) {
-    background: #140c0c;
+    background: #7d7373;
 }
 
 .product-name{

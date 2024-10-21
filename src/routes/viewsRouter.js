@@ -1,46 +1,43 @@
 import { Router } from 'express';
 
-import { products, midVal, midExists } from './productsRoutes.js'
+import {midVal, midExists } from './productsRoutes.js'
+
+import ProductModel from '../dao/models/productsModel.js';
 
 import { socketServer } from '../app.js';
 const router = Router();
 
 
-// Clase Product
-class Product {
-    constructor(idProd, codeProd, title, priceList, description, stockInitial, category) {
-        this.id = idProd;
-        this.code = codeProd;
-        this.title = title;
-        this.priceList = priceList;
-        this.description = description;
-        this.offer = 0;
-        this.stock = stockInitial;
-        this.category = category;
-        this.discount = 0;
-        this.status = true;
-    }
-}
 
-router.get('/', (req, res) => {
-    //console.log(products)
+router.get('/', async (req, res) => {
+    const products = await ProductModel.find().lean();
+    
     res.status(200).render('home', {products});
 });
 
-router.get('/realtimeproducts', (req, res) => {
-   
+router.get('/realtimeproducts', async (req, res) => {
+    const products =  await ProductModel.find().lean();
     res.status(200).render('realTimeProducts', {products});
 });
 
 
 
- router.post('/realtimeproducts', midVal, midExists, (req, res) => {
+ router.post('/realtimeproducts', midVal, midExists, async (req, res) => {
+    
     const datoFormu = req.body;
-     //funcion para crear id
-    const maxId = Math.max(...products.map(e => +e.id));
+    console.log(datoFormu.priceList);
     //creacion del nuevo producto
-    const newProduct = new Product(maxId + 1, datoFormu.code, datoFormu.title, datoFormu.priceList, datoFormu.description, datoFormu.stock, datoFormu.category);
-    products.push(newProduct);
+    const newProduct = await ProductModel.create({
+        code: datoFormu.code,
+        title: datoFormu.title,
+        priceList: datoFormu.priceList,
+        description: datoFormu.description,
+        stock: datoFormu.stock,
+        category: datoFormu.category
+    });
+
+    console.log(newProduct);
+    
 
     socketServer.emit('newProduct', newProduct); // Emitir evento a todos los clientes conectados
 

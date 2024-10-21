@@ -1,36 +1,16 @@
 import { Router } from "express";
 import { uploader } from "../uploader.js";
-import {productModel} from '../dao/models/productsModel.js';
+import productModel from '../dao/models/productsModel.js';
 
 const router = Router();
-
-// Class para manejar la creacion de productos
-class Product{        
-    constructor(idProd,codeProd,title,priceList,description,stockInitial,category){
-
-        this.id = idProd;
-        this.code = codeProd; //funcion para crear un Code
-        this.title = title;
-        this.priceList = priceList;
-        this.description = description;
-        this.offer = 0;
-        this.stock = stockInitial;
-        this.category =category
-        this.discount = 0;
-        this.status = true
-    }
-
-
-
-};
-
-export { Product };
-
 
 // Encontrar el producto por ID si lo encuentra devuelve el index si no devuelve false
 const indexExists = vId =>{
 
-    const productIndex = products.findIndex(product => product.id == vId);
+
+    //const productIndex = products.findIndex(product => product.id == vId);
+
+    const productIndex = productModel.findIndex({code: vId});
 
     if (productIndex === -1) {
         return false;
@@ -153,39 +133,38 @@ router.post('/',midVal,midExists,uploader.single('thumbnail'),async (req,res) =>
     
 
     const datoFormu = req.body
-    //funcion para crear id
-    const maxId = Math.max(...products.map(e => +e.id));
     //creacion del nuevo producto
     
     //const newProduct = new Product(maxId+1,datoFormu.code,datoFormu.title,datoFormu.priceList,datoFormu.description,datoFormu.stock,datoFormu.category);
-const newProduct = await productModel.create({
-    code: datoFormu.code,
-    title: datoFormu.title,
-    priceList: datoFormu.priceList,
-    description: datoFormu.description,
-    stock: datoFormu.stock,
-    category: datoFormu.category
-});
+    const newProduct = await productModel.create({
+        code: datoFormu.code,
+        title: datoFormu.title,
+        priceList: datoFormu.priceList,
+        description: datoFormu.description,
+        stock: datoFormu.stock,
+        category: datoFormu.category
+    });
    
     res.status(200).send({error: null, data: newProduct, thumbnail: req.file});
     res.send( console.log(`Producto ${datoFormu.title} Agregado correctamente`));
 });
 
-export {validateProducts, midVal, midExists };
+export { midVal, midExists };
 
 
 router.put('/:id', async (req, res) => {
-    const productId = req.params.id;
+    const productCode = req.params.id;
     const updatedData = req.body;
+    const products = await productModel.find().lean();
 
     //validacion del parametro
-    if(!indexExists(productId)){
+    if(!indexExists(productCode)){
         return res.status(404).send({ error: 'Producto no encontrado', data: null });
     }
 
     // No permitir la actualización del ID
     if (updatedData.hasOwnProperty('id')) {
-        console.warn(`Intento de modificacion de id: ${productId} Bloqueado Correctamente`)
+        console.warn(`Intento de modificacion de id: ${productCode} Bloqueado Correctamente`)
         return res.status(400).send({ error: 'No se puede actualizar el ID del producto', data: null });
     }
 
@@ -193,12 +172,12 @@ router.put('/:id', async (req, res) => {
     const allowedUpdates = ['code', 'title', 'priceList', 'description', 'stock', 'category','offer','discount','status'];
     allowedUpdates.forEach(field => {
         if (updatedData.hasOwnProperty(field)) {
-            products[indexExists(productId)][field] = updatedData[field];
+            products[indexExists(productCode)][field] = updatedData[field];
         }
     });
 
-    res.status(200).send({ error: null, data: products[indexExists(productId)] });
-    console.log(`Producto ${products[indexExists(productId)].title} actualizado correctamente`);
+    res.status(200).send({ error: null, data: products[indexExists(productCode)] });
+    console.log(`Producto ${products[indexExists(productCode)].title} actualizado correctamente`);
 });
 
 router.delete('/:id', async (req, res) => {

@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { products } from './productsRoutes.js';
+import productsModel from '../dao/models/productsModel.js';
+import ProductModel from "../dao/models/productsModel.js";
 
 const router = Router();
 
@@ -41,9 +42,9 @@ router.get('/:cid', (req, res) => {
 });
 
 // Ruta POST /:cid/product/:pid para agregar un producto al carrito
-router.post('/:cid/product/:pid', (req, res) => {
+router.post('/:cid/product/:pcode', (req, res) => {
     const cartId = parseInt(req.params.cid);
-    const productId = parseInt(req.params.pid);
+    const productCode = parseInt(req.params.pcode);
     const cart = carts.find(c => c.id === cartId);
 
     if (!cart) {
@@ -51,20 +52,20 @@ router.post('/:cid/product/:pid', (req, res) => {
     }
 
     // Validar si el producto existe en el array de productos
-    const productExists = products.some(product => product.id === productId);
-
+    //const productExists = products.some(product => product.id === productId);
+    const productExists= ProductModel.find({code: productCode}).lean();
     if (!productExists) {
         return res.status(404).send({ error: 'Producto no encontrado', data: null });
     }
 
-    const productIndex = cart.products.findIndex(p => p.idProduct === productId);
+    const productIndex = cart.products.findIndex(p => p.idProduct === productCode);
 
     if (productIndex !== -1) {
         cart.products[productIndex].quantity += 1;
-        console.log(`Producto ID:${productId} suma 1 al carrito con ID:${cartId} total:${cart.products[productIndex].quantity}`);
+        console.log(`Producto ID:${productCode} suma 1 al carrito con ID:${cartId} total:${cart.products[productIndex].quantity}`);
     } else {
-        cart.products.push({ idProduct: productId, quantity: 1 });
-        console.log(`Producto ID:${productId} agregado al carrito ID:${cartId}`);
+        cart.products.push({ idProduct: productCode, quantity: 1 });
+        console.log(`Producto ID:${productCode} agregado al carrito ID:${cartId}`);
         
     }
 
