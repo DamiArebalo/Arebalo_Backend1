@@ -10,13 +10,16 @@
 - [Componentes Principales](#componentes-principales)
   - [productsRoutes.js](#productsroutesjs)
   - [cartsRouter.js](#cartsrouterjs)
+  - [viewsRouter.js](#viewsrouterjs)
+- [Vistas y Tiempo Real](#vistas-y-tiempo-real)
 - [Cómo Ejecutar Mi Código](#cómo-ejecutar-mi-código)
+
 
 ---
 
 ## 🌟 Descripción del Proyecto
 
-Este proyecto es una aplicación Node.js que utiliza Express.js para crear una API backend para gestionar productos y carritos de compras. Demuestra operaciones CRUD básicas y diseño de API RESTful.
+Este proyecto es una aplicación Node.js que utiliza Express.js para crear una API backend para gestionar productos y carritos de compras. Además, integra Socket.IO para actualizaciones en tiempo real y Handlebars como motor de plantillas para renderizar vistas dinámicas.
 
 ---
 
@@ -24,14 +27,24 @@ Este proyecto es una aplicación Node.js que utiliza Express.js para crear una A
 
 ```
 .
-├── app.js
-├── config.js
-├── uploader.js
-├──routes
-│  ├── productsRoutes.js
-│  └── cartsRouter.js
-├──public
-   └── uploads
+├── src
+│   ├── app.js
+│   ├── config.js
+│   ├── uploader.js
+│   ├── routes
+│   │   ├── productsRoutes.js
+│   │   ├── cartsRouter.js
+│   │   └── viewsRouter.js
+│   ├── views
+│   │   ├── home.handlebars
+│   │   ├── realTimeProducts.handlebars
+│   │   └── layouts
+│   │       └── main.handlebars
+│   └── public
+│       ├── css
+│       │   └── index.css
+│       └── admin.html
+└── README.md
 ```
 
 ---
@@ -65,7 +78,45 @@ Este archivo gestiona las operaciones del carrito de compras:
 - Verifica la existencia del producto antes de agregarlo al carrito
 - Incrementa la cantidad si el producto ya existe en el carrito
 
+
+### viewsRouter.js
+
+Este archivo maneja las rutas para las vistas renderizadas:
+
+- 🏠 **GET /**: Renderiza la vista principal con la lista de productos
+- 🔄 **GET /realtimeproducts**: Renderiza la vista de productos en tiempo real
+- ➕ **POST /realtimeproducts**: Agrega un nuevo producto y actualiza la vista en tiempo real
+
+#### 🌈 Aspectos Destacados:
+- Utiliza Handlebars para renderizar las vistas
+- Implementa Socket.IO para actualizaciones en tiempo real
+- Crea nuevos productos utilizando la clase `Product`
+
 ---
+
+## 🖥️ Vistas y Tiempo Real
+
+### Handlebars Templates
+
+- **home.handlebars**: Muestra una lista estática de productos
+- **realTimeProducts.handlebars**: Presenta un formulario para agregar productos y una lista actualizable en tiempo real
+- **main.handlebars**: Plantilla principal que define la estructura HTML común
+
+### Socket.IO Integration
+
+- Permite la actualización en tiempo real de la lista de productos
+- Cuando se agrega un nuevo producto, todos los clientes conectados ven la actualización inmediatamente
+
+### Agregar Nuevos Productos
+
+1. Navega a la ruta `/views/realtimeproducts`
+2. Completa el formulario con los detalles del producto
+3. Envía el formulario
+4. La página se actualizará automáticamente para todos los usuarios conectados, mostrando el nuevo producto
+
+---
+
+
 
 ## 🏃‍♂️ Cómo Ejecutar Mi Código
 
@@ -75,7 +126,15 @@ Este archivo gestiona las operaciones del carrito de compras:
 4. Ejecuta `npm install` para instalar las dependencias.
 5. Inicia el servidor con `node src/app.js`.
 6. El servidor estará corriendo en `http://localhost:8080`.
+7. Accede a `http://localhost:8080/views` para ver la lista de productos estática.
+8. Accede a `http://localhost:8080/views/realtimeproducts` para interactuar con la vista en tiempo real.
 
-> **Nota:** Todas las pruebas e interacciones con la API se realizan utilizando Postman. Asegúrate de configurar tu entorno de Postman para probar los diversos endpoints descritos anteriormente.
+> **Nota:** Asegúrate de tener instaladas las dependencias necesarias como `express`, `express-handlebars`, y `socket.io`.
 
 ---
+
+
+
+
+
+
