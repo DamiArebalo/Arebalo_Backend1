@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { uploader } from "../uploader.js";
+import {productModel} from '../dao/models/productsModel.js';
 
 const router = Router();
 
@@ -25,35 +26,6 @@ class Product{
 
 export { Product };
 
-//Array incial de productos agregando elementos necesarios para mi proyecto final
-const products = [
-    {   
-        id: 1,
-        code: "ABC123", 
-        title: "Balsamo",
-        priceList: 25000,
-        description: "Balsamo revitalizante",
-        offer: 0,
-        stock: 20,
-        category: "botiquin",
-        discount: 0,
-        status: true
-        
-    },
-    {
-        id: 2,
-        code: "DEO555",
-        title: "Deo Intim",
-        priceList: "30000",
-        description: "Gel intimo femenino",
-        offer: 0,
-        stock: "10",
-        category: "fisico",
-        discount: 0,
-        status: true
-    }
-]
-export { products };
 
 // Encontrar el producto por ID si lo encuentra devuelve el index si no devuelve false
 const indexExists = vId =>{
@@ -69,21 +41,25 @@ const indexExists = vId =>{
 }
 
 //GET --> Listado de productos generales con un limite incluido
-router.get('/',(req, res) =>{
+router.get('/', async (req, res) =>{
     let { limit } = req.query;
     limit = parseInt(limit);
 
+    const data = await productModel.find().lean();
+
     if (!isNaN(limit) && limit > 0) {
-        res.status(200).send({error : null, data: products.slice(0, limit)});
+        res.status(200).send({error : null, data: data.slice(10, limit)});
     }else{
-        res.status(200).send({error : null, data: products});
+        res.status(200).send({error : null, data: data});
     }
     console.log("Se mostró una lista de Productos");
 });
 
 //GET --> mostrando solo un producto filtrando por su ID
-router.get('/:id', (req, res) =>{
-    const id = parseInt(req.params.id);
+router.get('/:id', async (req, res) =>{
+    const code = parseInt(req.params.id);
+
+    const product = await productModel.findOne({code: code}).lean();
     
     if(!indexExists(id)){
         res.status(404).send({ error: 'No se encuentra el producto', data: [] });
@@ -156,7 +132,7 @@ const midVal = (req, res, next) =>{
 }
 
 //MIDD para validar si todos los datos necesarios estan incluidos
-const midExists = (req, res,next) =>{
+const midExists =(req, res,next) =>{
     const datoFormu = req.body
 
     
@@ -173,14 +149,24 @@ const midExists = (req, res,next) =>{
 }
 
 //POST --> Agregar Productos
-router.post('/',midVal,midExists,uploader.single('thumbnail'),(req,res) =>{
+router.post('/',midVal,midExists,uploader.single('thumbnail'),async (req,res) =>{
     
+
     const datoFormu = req.body
     //funcion para crear id
     const maxId = Math.max(...products.map(e => +e.id));
     //creacion del nuevo producto
-    const newProduct = new Product(maxId+1,datoFormu.code,datoFormu.title,datoFormu.priceList,datoFormu.description,datoFormu.stock,datoFormu.category);
-    products.push(newProduct);
+    
+    //const newProduct = new Product(maxId+1,datoFormu.code,datoFormu.title,datoFormu.priceList,datoFormu.description,datoFormu.stock,datoFormu.category);
+const newProduct = await productModel.create({
+    code: datoFormu.code,
+    title: datoFormu.title,
+    priceList: datoFormu.priceList,
+    description: datoFormu.description,
+    stock: datoFormu.stock,
+    category: datoFormu.category
+});
+   
     res.status(200).send({error: null, data: newProduct, thumbnail: req.file});
     res.send( console.log(`Producto ${datoFormu.title} Agregado correctamente`));
 });
@@ -188,7 +174,7 @@ router.post('/',midVal,midExists,uploader.single('thumbnail'),(req,res) =>{
 export {validateProducts, midVal, midExists };
 
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
     const productId = req.params.id;
     const updatedData = req.body;
 
@@ -215,7 +201,7 @@ router.put('/:id', (req, res) => {
     console.log(`Producto ${products[indexExists(productId)].title} actualizado correctamente`);
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
     const productId = req.params.id;
 
     //validacion del parametro

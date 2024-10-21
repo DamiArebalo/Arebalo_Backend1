@@ -5,12 +5,16 @@ mongoose.pluralize(null);
 const collection = 'products';
 
 const schema = new mongoose.Schema({
-    product_id: { type: Number, required: true, unique: true },
-    category_id: { type: Number, required: true },
+    code: { type: String, required: true, unique: true },
+    title: { type: String, required: true },
+    priceList: { type: Number, required: true },
     description: { type: String },
-    product_name: { type: String, required: true },
+    offer: { type: Number, default: 0 },
     stock: { type: Number, required: true },
-    list_price: { type: Number, required: true }
+    category: { type: String, required: true },
+    discount: { type: Number, default: 0 },
+    status: { type: Boolean, default: true },
+    thumbnails: { type: [String], default: [] }  // Campo opcional para thumbnails
 });
 
 const ProductModel = mongoose.model(collection, schema);
