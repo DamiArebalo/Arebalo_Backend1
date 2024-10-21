@@ -10,7 +10,7 @@ const indexExists = vId =>{
 
     //const productIndex = products.findIndex(product => product.id == vId);
 
-    const productIndex = productModel.findIndex({code: vId});
+    const productIndex = productModel.findOne({code: vId});
 
     if (productIndex === -1) {
         return false;
@@ -41,10 +41,10 @@ router.get('/:id', async (req, res) =>{
 
     const product = await productModel.findOne({code: code}).lean();
     
-    if(!indexExists(id)){
+    if(!indexExists(code)){
         res.status(404).send({ error: 'No se encuentra el producto', data: [] });
     }else {
-        res.status(200).send({ error: null, data: products[indexExists(id)]});
+        res.status(200).send({ error: null, data: product});
     }
     
 });
@@ -155,7 +155,9 @@ export { midVal, midExists };
 router.put('/:id', async (req, res) => {
     const productCode = req.params.id;
     const updatedData = req.body;
-    const products = await productModel.find().lean();
+    const filter = {code: productCode};
+    
+    console.log(await productModel.findOne({code: productCode}));
 
     //validacion del parametro
     if(!indexExists(productCode)){
@@ -163,33 +165,27 @@ router.put('/:id', async (req, res) => {
     }
 
     // No permitir la actualización del ID
-    if (updatedData.hasOwnProperty('id')) {
-        console.warn(`Intento de modificacion de id: ${productCode} Bloqueado Correctamente`)
-        return res.status(400).send({ error: 'No se puede actualizar el ID del producto', data: null });
+    if (updatedData.hasOwnProperty('_id')||updatedData.hasOwnProperty('code')) {
+        console.warn(`Intento de modificacion de id/code: ${productCode} Bloqueado Correctamente`)
+        return res.status(400).send({ error: 'No se puede actualizar el ID/CODE del producto', data: null });
     }
 
-    // Actualizar solo los campos permitidos
-    const allowedUpdates = ['code', 'title', 'priceList', 'description', 'stock', 'category','offer','discount','status'];
-    allowedUpdates.forEach(field => {
-        if (updatedData.hasOwnProperty(field)) {
-            products[indexExists(productCode)][field] = updatedData[field];
-        }
-    });
+    const updatedProduct = await productModel.findOneAndUpdate(filter, updatedData);
 
-    res.status(200).send({ error: null, data: products[indexExists(productCode)] });
-    console.log(`Producto ${products[indexExists(productCode)].title} actualizado correctamente`);
+    res.status(200).send({ error: null, data: updatedProduct });
+    console.log(`Producto ${await productModel.findOne({code: productCode})} actualizado correctamente`);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:code', async (req, res) => {
     const productId = req.params.id;
-
+    console.log(productModel.find());
     //validacion del parametro
     if(!indexExists(productId)){
         return res.status(404).send({ error: 'Producto no encontrado', data: null });
     }
 
     // Eliminar el producto del array
-    const deletedProduct = products.splice(indexExists(productId), 1);
+    const deletedProduct = productModel.findOneAndDelete({code: productId}).lean();
 
     res.status(200).send({ error: null, data: deletedProduct });
     console.log(`Producto con ID ${productId} eliminado correctamente`);
