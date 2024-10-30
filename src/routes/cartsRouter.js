@@ -1,30 +1,21 @@
 import { Router } from "express";
-import productsModel from '../dao/models/productsModel.js';
-import ProductModel from "../dao/models/productsModel.js";
+import productController from "../dao/productController.js";
+import CartController from "../dao/cartsController.js";
 
 const router = Router();
 
-let carts = [];
-
 // Ruta raíz POST / para crear un nuevo carrito
-router.post('/', (req, res) => {
-    let maxId = Math.max(...carts.map(e => +e.id));
-    if(maxId == -Infinity){
-        maxId = 0
-    }
-    const newCart = {
-        id: maxId+1,
-        products: []
-    };
-    carts.push(newCart);
+router.post('/', async(req, res) => {
+
+    const newCart = await CartController.add({products: [] });
     res.status(201).send({ error: null, data: newCart });
-    console.log(`Carrito con ID ${newCart.id} creado correctamente`);
+    console.log(`Carrito con ID ${newCart._id} creado correctamente`);
 });
 
 // Ruta GET /:cid para listar los productos de un carrito específico
-router.get('/:cid', (req, res) => {
+router.get('/:cid', async (req, res) => {
     const cartId = parseInt(req.params.cid);
-    const cart = carts.find(c => c.id === cartId);
+    const cart = await CartController.get({id: cartId});
 
     if (!cart) {
         return res.status(404).send({ error: 'Carrito no encontrado', data: null });
@@ -42,35 +33,31 @@ router.get('/:cid', (req, res) => {
 });
 
 // Ruta POST /:cid/product/:pid para agregar un producto al carrito
-router.post('/:cid/product/:pcode', (req, res) => {
+router.post('/:cid/product/:pcode', async (req, res) => {
     const cartId = parseInt(req.params.cid);
     const productCode = parseInt(req.params.pcode);
-    const cart = carts.find(c => c.id === cartId);
+    const cart = await CartController.get({id: cartId});
 
     if (!cart) {
         return res.status(404).send({ error: 'Carrito no encontrado', data: null });
     }
 
-    // Validar si el producto existe en el array de productos
-    //const productExists = products.some(product => product.id === productId);
-    const productExists= ProductModel.find({code: productCode}).lean();
-    if (!productExists) {
-        return res.status(404).send({ error: 'Producto no encontrado', data: null });
-    }
-
-    const productIndex = cart.products.findIndex(p => p.idProduct === productCode);
-
+    // Verificar si el producto ya está en el carrito
+    const productIndex = cart.products.findIndex(product => product.code === productCode);
     if (productIndex !== -1) {
+        // Si el producto ya está en el carrito, incrementar la cantidad
         cart.products[productIndex].quantity += 1;
         console.log(`Producto ID:${productCode} suma 1 al carrito con ID:${cartId} total:${cart.products[productIndex].quantity}`);
     } else {
-        cart.products.push({ idProduct: productCode, quantity: 1 });
+        // Si el producto no está en el carrito, agregarlo con una cantidad de 1
+        cart.products.push({ code: productCode, quantity: 1 });
         console.log(`Producto ID:${productCode} agregado al carrito ID:${cartId}`);
-        
     }
 
+    // Guardar los cambios en el carrito (esto asume que tienes un método para actualizar el carrito)
+    await CartController.update(cart);
+
     res.status(200).send({ error: null, data: cart });
-    
 });
 
 

@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { uploader } from "../uploader.js";
 import productModel from '../dao/models/productsModel.js';
+import ProductController from "../dao/productController.js";
 
 const router = Router();
+
+// Crear una instancia del controlador
+const productController = new ProductController();
 
 // Encontrar el producto por ID si lo encuentra devuelve el index si no devuelve false
 const indexExists = vId =>{
@@ -10,7 +14,7 @@ const indexExists = vId =>{
 
     //const productIndex = products.findIndex(product => product.id == vId);
 
-    const productIndex = productModel.findOne({code: vId});
+const productIndex = productModel.findOne({code: vId});
 
     if (productIndex === -1) {
         return false;
@@ -21,25 +25,30 @@ const indexExists = vId =>{
 }
 
 //GET --> Listado de productos generales con un limite incluido
-router.get('/', async (req, res) =>{
-    let { limit } = req.query;
-    limit = parseInt(limit);
 
-    const data = await productModel.find().lean();
+router.get('/', async (req, res) => {
+    try {
+        let { limit } = req.query;
+        limit = parseInt(limit);
 
-    if (!isNaN(limit) && limit > 0) {
-        res.status(200).send({error : null, data: data.slice(10, limit)});
-    }else{
-        res.status(200).send({error : null, data: data});
+        const data = await productController.get();
+
+        if (!isNaN(limit) && limit > 0) {
+            res.status(200).send({ error: null, data: data.slice(0, limit) });
+        } else {
+            res.status(200).send({ error: null, data: data });
+        }
+        console.log("Se mostró una lista de Productos");
+    } catch (error) {
+        res.status(500).send({ error: error.message, data: null });
     }
-    console.log("Se mostró una lista de Productos");
 });
 
 //GET --> mostrando solo un producto filtrando por su ID
 router.get('/:id', async (req, res) =>{
     const code = parseInt(req.params.id);
 
-    const product = await productModel.findOne({code: code}).lean();
+    const product = await productController.get({code: code});
     
     if(!indexExists(code)){
         res.status(404).send({ error: 'No se encuentra el producto', data: [] });
@@ -136,7 +145,7 @@ router.post('/',midVal,midExists,uploader.single('thumbnail'),async (req,res) =>
     //creacion del nuevo producto
     
     //const newProduct = new Product(maxId+1,datoFormu.code,datoFormu.title,datoFormu.priceList,datoFormu.description,datoFormu.stock,datoFormu.category);
-    const newProduct = await productModel.create({
+    const newProduct = await productController.add({
         code: datoFormu.code,
         title: datoFormu.title,
         priceList: datoFormu.priceList,
@@ -157,7 +166,7 @@ router.put('/:id', async (req, res) => {
     const updatedData = req.body;
     const filter = {code: productCode};
     
-    console.log(await productModel.findOne({code: productCode}));
+    console.log(await productController.get({code: productCode}));
 
     //validacion del parametro
     if(!indexExists(productCode)){
@@ -170,7 +179,7 @@ router.put('/:id', async (req, res) => {
         return res.status(400).send({ error: 'No se puede actualizar el ID/CODE del producto', data: null });
     }
 
-    const updatedProduct = await productModel.findOneAndUpdate(filter, updatedData);
+    const updatedProduct = await productController.update(filter, updatedData);
 
     res.status(200).send({ error: null, data: updatedProduct });
     console.log(`Producto ${await productModel.findOne({code: productCode})} actualizado correctamente`);
@@ -185,13 +194,34 @@ router.delete('/:code', async (req, res) => {
     }
 
     // Eliminar el producto del array
-    const deletedProduct = productModel.findOneAndDelete({code: productId}).lean();
+    const deletedProduct = productController.delete({code: productId});
 
     res.status(200).send({ error: null, data: deletedProduct });
     console.log(`Producto con ID ${productId} eliminado correctamente`);
 });
 
+router.get('/stats/:limit', async (req, res) => {
+    const limit = parseInt(req.params.limit);
+    try {
+        const stats = await productController.stats(limit);
+        res.status(200).send({ error: null, data: stats });
+        console.log('Estadísticas de productos obtenidas correctamente');
+    } catch (error) {
+        res.status(500).send({ error: error.message, data: null });
+    }
+});
 
+router.get('/paginated/:page?', async (req, res) => {
+    const page = parseInt(req.params.page) || 1;
+   // const limit = parseInt(req.params.limit);
+    try {
+        const products = await productController.getPaginated(page, 5);
+        res.status(200).send({ error: null, data: products });
+        console.log('Productos paginados obtenidos correctamente');
+    } catch (error) {
+        res.status(500).send({ error: error.message, data: null });
+    }
+});
 
 export default router ;
 

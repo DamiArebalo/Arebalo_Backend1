@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
+import config from '../../config.js';
 
 mongoose.pluralize(null);
 
-const collection = 'categories';
+const collection = config.CATEGORIES_COLLECTION;
 
 const schema = new mongoose.Schema({
-    category_id: { type: Number, required: true, unique: true },
     name: { type: String, required: true }
 });
 
