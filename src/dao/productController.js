@@ -1,5 +1,7 @@
 
+import { query } from 'express';
 import ProductModel from './models/productsModel.js';
+
 
 class ProductController {
     constructor() {}
@@ -56,9 +58,9 @@ class ProductController {
         }
     }
 
-    getPaginated = async (page) => {
+    getPaginated = async (query,options) => {
         try {
-            const products = await ProductModel.paginate({},{ limit: 5, page: page }).lean();
+            const products = await ProductModel.paginate(query,options);
             return products;
         } catch (err) {
             return err.message;

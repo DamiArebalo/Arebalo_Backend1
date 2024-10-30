@@ -27,21 +27,27 @@ const productIndex = productModel.findOne({code: vId});
 //GET --> Listado de productos generales con un limite incluido
 
 router.get('/', async (req, res) => {
+    
+    const { limit, page, sort, query} = req.query; // Agregar el parámetro sort
+
+    const sortOrder = sort === 'desc' ? -1 : (sort === 'asc' ? 1 : null);
+
+
+    const options = {
+        limit: parseInt(limit) || 10, 
+        page: parseInt(page),   
+        sort: sortOrder !== null ? { priceList: sortOrder } : {}
+        // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
+    };
+    console.log(options);
     try {
-        let { limit } = req.query;
-        limit = parseInt(limit);
-
-        const data = await productController.get();
-
-        if (!isNaN(limit) && limit > 0) {
-            res.status(200).send({ error: null, data: data.slice(0, limit) });
-        } else {
-            res.status(200).send({ error: null, data: data });
-        }
-        console.log("Se mostró una lista de Productos");
+        const products = await productController.getPaginated(query, options);
+        res.status(200).send({ error: null, data: products });
+        console.log('Productos paginados y ordenados obtenidos correctamente');
     } catch (error) {
         res.status(500).send({ error: error.message, data: null });
     }
+    
 });
 
 //GET --> mostrando solo un producto filtrando por su ID
@@ -211,17 +217,24 @@ router.get('/stats/:limit', async (req, res) => {
     }
 });
 
-router.get('/paginated/:page?', async (req, res) => {
-    const page = parseInt(req.params.page) || 1;
-   // const limit = parseInt(req.params.limit);
-    try {
-        const products = await productController.getPaginated(page, 5);
-        res.status(200).send({ error: null, data: products });
-        console.log('Productos paginados obtenidos correctamente');
-    } catch (error) {
-        res.status(500).send({ error: error.message, data: null });
-    }
-});
+// router.get('/paginated/', async (req, res) => {
+//     const { limit = 10, page = 1, sort = '', query = {} } = req.query; // Obtener los parámetros de consulta con valores predeterminados
+
+//     const options = {
+//         limit: parseInt(limit), // Convertir a número
+//         page: parseInt(page),   // Convertir a número
+//         sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
+//     };
+
+//     try {
+//         const products = await productController.getPaginated(query, options);
+//         res.status(200).send({ error: null, data: products });
+//         console.log('Productos paginados obtenidos correctamente');
+//     } catch (error) {
+//         res.status(500).send({ error: error.message, data: null });
+//     }
+// });
+
 
 export default router ;
 
