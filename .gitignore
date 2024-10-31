@@ -2983,3 +2983,8 @@ node_modules/.bin/node-which.ps1
 node_modules/.bin/nodemon
 node_modules/.bin/nodemon.cmd
 node_modules/.bin/nodemon.ps1
+node_modules/@handlebars/allow-prototype-access/types/index.d.ts
+node_modules/@handlebars/allow-prototype-access/src/index.js
+node_modules/@handlebars/allow-prototype-access/README.md
+node_modules/@handlebars/allow-prototype-access/LICENSE.md
+node_modules/@handlebars/allow-prototype-access/dist/cjs/index.js

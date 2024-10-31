@@ -40,3 +40,46 @@ li:nth-child(odd) {
 .product-price {
     color: #888;
 }
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+  }
+  
+  .list-group-item {
+    border-color: var(--border-color);
+    transition: background-color 0.3s ease;
+  }
+  
+  .list-group-item:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+  }
+  
+  .badge {
+    font-size: 0.8em;
+  }
+  
+  .pagination .page-link {
+    color: var(--primary-color);
+  }
+  
+  .pagination .page-link:hover {
+    background-color: var(--primary-color);
+    color: #ffffff;
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      margin-top: 1rem;
+    }
+  }

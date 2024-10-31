@@ -1,23 +1,59 @@
 import { Router } from 'express';
 
-import {midVal, midExists } from './productsRoutes.js'
+import {midVal, midExists } from '../public/js/utils.js';
 
 import ProductModel from '../dao/models/productsModel.js';
+import ProductController from '../dao/productController.js';
 
 import { socketServer } from '../app.js';
 const router = Router();
 
-
+const productController = new ProductController();
 
 router.get('/', async (req, res) => {
-    const products = await ProductModel.find().lean();
+    const { limit, page, sort, query} = req.query; // Agregar el parámetro sort
+
+    const sortOrder = sort === 'desc' ? -1 : (sort === 'asc' ? 1 : null);
+
+    const options = {
+        limit: parseInt(limit) || 10, 
+        page: parseInt(page) || 1,   
+        sort: sortOrder !== null ? { priceList: sortOrder } : {}
+        // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
+    };
+    console.log(options);
+    try {
+        const products = await productController.getPaginated(query, options);
+        console.log(products);
+        res.status(200).render('home', {products : products});
+        console.log('Productos paginados y ordenados obtenidos correctamente');
+    } catch (error) {
+        res.status(500).send({ error: error.message, data: null });
+    }
     
-    res.status(200).render('home', {products});
+    
 });
 
 router.get('/realtimeproducts', async (req, res) => {
-    const products =  await ProductModel.find().lean();
-    res.status(200).render('realTimeProducts', {products});
+    const { limit, page, sort, query} = req.query; // Agregar el parámetro sort
+
+    const sortOrder = sort === 'desc' ? -1 : (sort === 'asc' ? 1 : null);
+
+    const options = {
+        limit: parseInt(limit) || 10, 
+        page: parseInt(page) || 1,   
+        sort: sortOrder !== null ? { priceList: sortOrder } : {}
+        // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
+    };
+    console.log(options);
+    try {
+        const products = await productController.getPaginated(query, options);
+        console.log(products);
+        res.status(200).render('realtimeproducts', {products : products});
+        console.log('Productos paginados y ordenados obtenidos correctamente');
+    } catch (error) {
+        res.status(500).send({ error: error.message, data: null });
+    }
 });
 
 

@@ -1,54 +1,67 @@
 import { Router } from "express";
 import { uploader } from "../uploader.js";
-import productModel from '../dao/models/productsModel.js';
+
 import ProductController from "../dao/productController.js";
+import { transformPaginationResult, indexExists, midVal, midExists } from '../public/js/utils.js';
+import CategoryController from "../dao/categoryController.js";
 
 const router = Router();
 
 // Crear una instancia del controlador
 const productController = new ProductController();
-
-// Encontrar el producto por ID si lo encuentra devuelve el index si no devuelve false
-const indexExists = vId =>{
-
-
-    //const productIndex = products.findIndex(product => product.id == vId);
-
-const productIndex = productModel.findOne({code: vId});
-
-    if (productIndex === -1) {
-        return false;
-    }else{
-        return productIndex;
-    }
-
-}
+const categoryController = new CategoryController();
 
 //GET --> Listado de productos generales con un limite incluido
 
 router.get('/', async (req, res) => {
-    
-    const { limit, page, sort, query} = req.query; // Agregar el parámetro sort
+
+    const route= "api/products";
+    const { limit, page, sort,categoryName,available} = req.query; // Agregar el parámetro sort
 
     const sortOrder = sort === 'desc' ? -1 : (sort === 'asc' ? 1 : null);
 
+    const filter = {};
+    if (categoryName) {
+        try {
+            const category = await categoryController.findByName(categoryName);
+            if (category) {
+                filter.category = category._id; // Usar el ID de la categoría encontrada
+            } else {
+                return res.status(404).send({ status: "error", message: "Category not found" });
+            }
+        } catch (error) {
+            return res.status(500).send({ status: "error", message: error.message });
+        }
+    }
 
+    if (available === 'true' || available === 'false') {
+        filter.stock = available === 'true' ? { $gt: 0 } : 0; // Disponibles o No disponibles
+    } else if (available !== undefined) {
+        return res.status(400).send({ error: 'El parámetro available debe ser "true" o "false".', data: null });
+    } else {
+        filter.stock = { $gt: 0 }; // Disponibilidad por defecto
+    }
+
+   // console.log(filter, categoryName, available);
     const options = {
         limit: parseInt(limit) || 10, 
         page: parseInt(page),   
         sort: sortOrder !== null ? { priceList: sortOrder } : {}
         // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
     };
-    console.log(options);
+    
     try {
-        const products = await productController.getPaginated(query, options);
-        res.status(200).send({ error: null, data: products });
+        const products = await productController.getPaginated(filter, options);
+        const result = transformPaginationResult(products, route);
+        res.status(200).send(result);
         console.log('Productos paginados y ordenados obtenidos correctamente');
     } catch (error) {
-        res.status(500).send({ error: error.message, data: null });
+        res.status(500).send({ error: error.message, payload: null });
     }
     
 });
+
+
 
 //GET --> mostrando solo un producto filtrando por su ID
 router.get('/:id', async (req, res) =>{
@@ -63,85 +76,6 @@ router.get('/:id', async (req, res) =>{
     }
     
 });
-
-//FUNCION PARA VALIDAR LA ENTRADA DE INFO
-function validateProducts(priceList,description,stock){
-    //Inicializacion de componentes
-
-    let parsedPrice = parseFloat(priceList);
-    let parsedStock = parseInt(stock)
-
-    // Validación para description
-    const valDescription = description =>{
-        if (description.length > 50) {
-           console.error("Error: description no debe exceder los 50caracteres.");
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    // Validación para productPrice (precio)
-    const valPrice = parsedPrice =>{
-
-        if (isNaN(parsedPrice) || parsedPrice < 0) {
-            console.error("Error: priceList debe ser un valor numérico no negativo.");
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-
-
-    // Validación para STOCK
-    const valStock = parsedStock =>{
-
-        if (parsedStock < 0) {
-            console.error("Error: ID no debe ser un número negativo.");
-            return false;
-        }else{
-            return true;
-        }
-    }
-
-    //VALIDACION GENERAL
-    if(valStock(stock)&& valPrice(priceList)&& valDescription(description)){
-        return true
-    }else{
-        return false
-    }
-
-
-
-}
-
-//MIDD PARA VALIDAR LA DATA
-const midVal = (req, res, next) =>{
-    
-    if(validateProducts(req.body.priceList,req.body.description,req.body.stock) == false){ 
-       return res.status(406).send({error: "Los datos ingresados no son validos", data: null});
-    }else{
-        next();
-    }
-}
-
-//MIDD para validar si todos los datos necesarios estan incluidos
-const midExists =(req, res,next) =>{
-    const datoFormu = req.body
-
-    
-    if(datoFormu.hasOwnProperty('title')&&datoFormu.hasOwnProperty('description')
-        &&datoFormu.hasOwnProperty('code')&&datoFormu.hasOwnProperty('priceList')
-        &&datoFormu.hasOwnProperty('stock')&&datoFormu.hasOwnProperty('category')){
-            
-        next();
-            
-    }else{
-        res.status(400).send({error: 'Faltan Datos Necesarios', data: null});
-        res.send( console.log(`error en proceso de crear producto nuevo`));
-    }
-}
 
 //POST --> Agregar Productos
 router.post('/',midVal,midExists,uploader.single('thumbnail'),async (req,res) =>{
@@ -163,8 +97,6 @@ router.post('/',midVal,midExists,uploader.single('thumbnail'),async (req,res) =>
     res.status(200).send({error: null, data: newProduct, thumbnail: req.file});
     res.send( console.log(`Producto ${datoFormu.title} Agregado correctamente`));
 });
-
-export { midVal, midExists };
 
 
 router.put('/:id', async (req, res) => {
@@ -216,24 +148,6 @@ router.get('/stats/:limit', async (req, res) => {
         res.status(500).send({ error: error.message, data: null });
     }
 });
-
-// router.get('/paginated/', async (req, res) => {
-//     const { limit = 10, page = 1, sort = '', query = {} } = req.query; // Obtener los parámetros de consulta con valores predeterminados
-
-//     const options = {
-//         limit: parseInt(limit), // Convertir a número
-//         page: parseInt(page),   // Convertir a número
-//         sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
-//     };
-
-//     try {
-//         const products = await productController.getPaginated(query, options);
-//         res.status(200).send({ error: null, data: products });
-//         console.log('Productos paginados obtenidos correctamente');
-//     } catch (error) {
-//         res.status(500).send({ error: error.message, data: null });
-//     }
-// });
 
 
 export default router ;
