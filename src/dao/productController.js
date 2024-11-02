@@ -71,7 +71,9 @@ class ProductController {
     getByCode = async (code) => {
         try {
             const product = await ProductModel.findOne({ code: code }, '_id'); // Solo selecciona el campo _id
+            console.log("intento de obtener producto: ",code ,product);
             return product ? product._id : null;
+            
         } catch (err) {
             return err.message;
         }

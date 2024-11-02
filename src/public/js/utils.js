@@ -1,6 +1,9 @@
 import ProductController from '../../dao/productController.js';
 const productController = new ProductController();
 
+import CartController from '../../dao/cartsController.js';
+const cartController = new CartController();
+
 
 
 // Función para transformar el resultado de la paginación
@@ -55,9 +58,59 @@ const midExists = (req, res, next) => {
     }
 };
 
-const getId = async (code) => {
-    const product = await productController.get({ code: code });
-    return product ? product._id : null;
+let sesionCart;
+
+const addToCart = async (data) => {
+
+    console.log("data inicial: ",data);
+
+    const cart = await cartController.get({ _id: sesionCart });
+
+    const productId = await productController.getByCode(data.productId);
+
+    data.productId = productId;
+    
+    console.log("data actualizada 1: ", data);
+    console.log("cart incial: ", cart);
+    
+
+    if(cart==null){
+        
+        const newCart = await cartController.add({products: [{product : data.productId, quantity: data.quantity}]});
+        console.log("newCart: ", newCart);
+        data.cartId = newCart._id;
+        console.log("data actualizada 2: ", data);
+        sesionCart = data.cartId;
+
+        console.log("sesionCart: ", sesionCart);
+        return newCart;
+    
+        
+    }else{
+        //console.log("verifico array",cart.products);
+        const exists = cart.products.some(item => item.product._id.equals(data.productId));
+        console.log("exists: ", exists);
+
+        if (exists) {
+            const updatedProduct = await cartController.sumProductQuantity(sesionCart, data.productId, data.quantity);
+            console.log("Producto actualizado: ", updatedProduct);
+
+            return updatedProduct;
+        }else{
+            const updatedCart = await cartController.addProduct(sesionCart, data.productId, data.quantity);
+            console.log("cart actualizada: ", updatedCart);
+            return updatedCart;
+        }
+            
+        
+
+    }
+
+    
+
+
+
 };
 
-export { transformPaginationResult, indexExists, midVal, midExists, getId};
+
+export { transformPaginationResult, indexExists, midVal, midExists, addToCart};

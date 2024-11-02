@@ -36,7 +36,7 @@ class CartController {
         }
     }
 
-    addProduct = async (cartId, productId) => {
+    addProduct = async (cartId, productId, quantity) => {
         try {
             const cart = await CartModel.findById(cartId);
             if (!cart) return null;
@@ -45,10 +45,10 @@ class CartController {
 
             if (productIndex > -1) {
                 // Si el producto ya está en el carrito, incrementa la cantidad
-                cart.products[productIndex].quantity += 1;
+                cart.products[productIndex].quantity += quantity || 1;
             } else {
                 // Si el producto no está en el carrito, agrégalo
-                cart.products.push({ product: productId, quantity: 1 });
+                cart.products.push({ product: productId, quantity:  quantity || 1 });
             }
 
             await cart.save();
@@ -90,15 +90,48 @@ class CartController {
     updateProductQuantity = async (cartId, productId, quantity) => {
         try {
             const cart = await CartModel.findById(cartId);
-            if (!cart) return null;
+            if (!cart){
+                console.log("no existe el carrito");
+                return null;
 
-            const productIndex = cart.products.findIndex(item => item.product.toString() === productId);
+            } 
+
+            console.log(cart);
+            const productIndex = cart.products.findIndex(item => item.product.toString() === productId.toString());
             if (productIndex > -1) {
                 cart.products[productIndex].quantity = quantity;
                 await cart.save();
                 return cart.populate('products.product');
+            }else{
+                console.log("producto no encontrado");
+                return null;
             }
-            return null;
+            
+        } catch (err) {
+            return err.message;
+        }
+    }
+
+    sumProductQuantity = async (cartId, productId, quantity) => {
+        try {
+            const cart = await CartModel.findById(cartId);
+            if (!cart){
+                console.log("no existe el carrito");
+                return null;
+
+            } 
+
+            console.log(cart);
+            const productIndex = cart.products.findIndex(item => item.product.toString() === productId.toString());
+            if (productIndex > -1) {
+                cart.products[productIndex].quantity += quantity;
+                await cart.save();
+                return cart.populate('products.product');
+            }else{
+                console.log("producto no encontrado");
+                return null;
+            }
+            
         } catch (err) {
             return err.message;
         }
