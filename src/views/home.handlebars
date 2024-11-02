@@ -1,13 +1,38 @@
 <div class="container">
     <h1>Lista de Productos</h1>
     
-    <ul>
+    <ul class="product-list">
         {{#each products.docs}}
-            <li>
-                <span>{{this.code}}</span>
-                <span>{{this.title}}</span>
-                <span>{{this.description}}</span>
-                <span>${{this.priceList}}</span>
+            <li class="product-item">
+                <div class="product-info">
+                    <span class="product-code">{{this.code}}</span>
+                    <span class="product-title">{{this.title}}</span>
+                    <span class="product-description">{{this.description}}</span>
+                    <span class="product-price">${{this.priceList}}</span>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button class="quantity-btn minus-btn" data-product-id="{{this.code}}">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" 
+                               class="quantity-input" 
+                               value="1" 
+                               min="1" 
+                               max="{{this.stock}}" 
+                               data-product-id="{{this.code}}"
+                               readonly>
+                        <button class="quantity-btn plus-btn" data-product-id="{{this.code}}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="add-to-cart-btn" 
+                            data-product-id="{{this.code}}" 
+                            data-stock="{{this.stock}}">
+                        <i class="fas fa-shopping-cart"></i>
+                        Agregar
+                    </button>
+                </div>
             </li>
         {{/each}}
     </ul>
@@ -33,6 +58,42 @@
             {{/if}}
         </ul>
     </nav>
+</div>
+
+<script>
+    import ProductController from '../dao/productController.js';
+    const productController = new ProductController();
+
+     // Manejador de cantidad
+    const handleQuantity = (productId, action) => {
+        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+        const currentValue = parseInt(input.value);
+        const maxStock = parseInt(input.max);
+
+        if (action === 'increase' && currentValue < maxStock) {
+            input.value = currentValue + 1;
+        } else if (action === 'decrease' && currentValue > 1) {
+            input.value = currentValue - 1;
+        }
+    };
+
+    // Eventos para los botones de cantidad
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const productId = e.target.closest('.quantity-btn').dataset.productId;
+            handleQuantity(productId, 'decrease');
+        });
+    });
+
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const productId = e.target.closest('.quantity-btn').dataset.productId;
+            handleQuantity(productId, 'increase');
+        });
+    });
+
+
+</script>
 
 
 

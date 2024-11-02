@@ -1,101 +1,233 @@
 <div class="container">
-    <div class="container">
-        <h1>Agregar Productos</h1>
-        <form action="./realtimeproducts" method="POST" id="productForm">
-            <label for="code">Código</label>
-            <input type="text" id="code" name="code" required>
-        
-            <label for="title">Título</label>
-            <input type="text" id="title" name="title" required>
+    <div class="form-container">
+        <h2 class="form-title">Agregar Nuevo Producto</h2>
+        <form id="productForm" class="form-grid">
+            <div class="form-group">
+                <label class="form-label" for="code">Código</label>
+                <input type="text" id="code" name="code" class="form-input" required>
+            </div>
             
-            <label for="priceList">Precio</label>
-            <input type="text" id="priceList" name="priceList" required>
+            <div class="form-group">
+                <label class="form-label" for="title">Título</label>
+                <input type="text" id="title" name="title" class="form-input" required>
+            </div>
             
-            <label for="description">Descripción</label>
-            <input type="text" id="description" name="description" required>
+            <div class="form-group">
+                <label class="form-label" for="priceList">Precio</label>
+                <input type="number" id="priceList" name="priceList" class="form-input" min="0" step="0.01" required>
+            </div>
             
+            <div class="form-group">
+                <label class="form-label" for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" class="form-input" min="0" required>
+            </div>
             
-            <label for="stock">Stock</label>
-            <input type="text" id="stock" name="stock" required>
+            <div class="form-group full-width">
+                <label class="form-label" for="description">Descripción</label>
+                <input type="text" id="description" name="description" class="form-input" required>
+            </div>
             
-            <label for="category">Categoría</label>
-            <select id="category" name="category" required>
-                <option value="botiquin">Botiquín</option>
-                <option value="aromaterapia">Aromaterapia</option>
-                <option value="frecuente">Frecuente</option>
-            </select>
-            
-    
+            <div class="form-group full-width">
+                <label class="form-label" for="category">Categoría</label>
+                <select id="category" name="category" class="form-select" required>
+                    <option value="">Seleccione una categoría</option>
+                    <option value="botiquin">Botiquín</option>
+                    <option value="aromaterapia">Aromaterapia</option>
+                    <option value="frecuente">Frecuente</option>
+                </select>
+            </div>
             
             <input type="hidden" id="status" name="status" value="true">
             
-            <button type="submit" id="submitBtn">Agregar Producto</button>
+            <div class="form-group full-width">
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-plus"></i>
+                    Agregar Producto
+                </button>
+            </div>
         </form>
     </div>
-    <h1>LISTA DE PRODUCTOS</h1>
 
-    <ul>
-        
-        {{#each products.docs}}
-            <li>
-                <span>{{this.code}}</span>
-                <span>{{this.title}}</span>
-                <span>{{this.description}}</span>
-                <span>${{this.priceList}}</span>
-            </li>
-        {{/each}}
-    </ul>
-
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
-            {{#if products.hasPrevPage}}
-                <li class="page-item">
-                    <a class="page-link" href="/views/realtimeproducts/?page={{products.prevPage}}&limit={{products.limit}}" aria-label="Previous">
-                        <i class="fa fa-chevron-left"></i>
-                    </a>
+    <div class="products-container">
+        <h2 class="section-title">Lista de Productos</h2>
+        <ul class="product-list">
+            {{#each products.docs}}
+                <li class="product-item">
+                    <div class="product-info">
+                        <span class="product-code">{{this.code}}</span>
+                        <span class="product-title">{{this.title}}</span>
+                        <span class="product-description">{{this.description}}</span>
+                        <span class="product-price">${{this.priceList}}</span>
+                    </div>
+                    <div class="product-actions">
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus-btn" data-product-id="{{this.code}}">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" 
+                                   class="quantity-input" 
+                                   value="1" 
+                                   min="1" 
+                                   max="{{this.stock}}" 
+                                   data-product-id="{{this.code}}"
+                                   readonly>
+                            <button class="quantity-btn plus-btn" data-product-id="{{this.code}}">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart-btn" 
+                                data-product-id="{{this.code}}" 
+                                data-stock="{{this.stock}}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Agregar
+                        </button>
+                    </div>
                 </li>
-            {{/if}}
-            <li class="page-item disabled">
-                <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
-            </li>
-            {{#if products.hasNextPage}}
-                <li class="page-item">
-                    <a class="page-link" href="/views/realtimeproducts/?page={{products.nextPage}}&limit={{products.limit}}" aria-label="Next">
-                        <i class="fa fa-chevron-right"></i>
-                    </a>
-                </li>
-            {{/if}}
+            {{/each}}
         </ul>
-    </nav>
 
-
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {{#if products.hasPrevPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="/views/realtimeproducts/?page={{products.prevPage}}&limit={{products.limit}}" aria-label="Previous">
+                            <i class="fa fa-chevron-left"></i>
+                        </a>
+                    </li>
+                {{/if}}
+                <li class="page-item disabled">
+                    <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
+                </li>
+                {{#if products.hasNextPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="/views/realtimeproducts/?page={{products.nextPage}}&limit={{products.limit}}" aria-label="Next">
+                            <i class="fa fa-chevron-right"></i>
+                        </a>
+                    </li>
+                {{/if}}
+            </ul>
+        </nav>
+    </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.1/dist/sweetalert2.all.min.js"></script>
-<script type="module">
-    const url = "";
-    const option = {};
-    const socketClient = io(url,option);
+<script>
     
+const socketClient = io();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const productForm = document.getElementById('productForm');
     
-
-    socketClient.on("connect", () => {
-        console.log(`connected to ${url}`);
-
-        socketClient.on('newProduct', (product) => {
-        console.log('Nuevo producto agregado:', product);
+    // Manejador del formulario
+    productForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
         
-        const productList = document.getElementById('productList');
-            const newProductElement = document.createElement('li');
-            newProductElement.innerHTML = `
-                <span class="product-name">${product.title}</span>
-                <span class="product-price">$${product.priceList}</span>
-            `;
-            productList.appendChild(newProductElement);
+        const formData = new FormData(productForm);
+        const productData = Object.fromEntries(formData.entries());
+        
+        try {
+            productForm.classList.add('loading');
+            
+            // Emitir evento al servidor
+            socketClient.emit('addProduct', productData);
+            
+            // Mostrar notificación de éxito
+            await Swal.fire({
+                title: '¡Producto agregado!',
+                text: 'El producto se ha agregado correctamente',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            
+            // Limpiar formulario
+            productForm.reset();
+            
+        } catch (error) {
+            Swal.fire({
+                title: 'Error',
+                text: 'No se pudo agregar el producto',
+                icon: 'error'
+            });
+        } finally {
+            productForm.classList.remove('loading');
+        }
+    });
+
+    // Manejador de cantidad
+    const handleQuantity = (productId, action) => {
+        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+        const currentValue = parseInt(input.value);
+        const maxStock = parseInt(input.max);
+
+        if (action === 'increase' && currentValue < maxStock) {
+            input.value = currentValue + 1;
+        } else if (action === 'decrease' && currentValue > 1) {
+            input.value = currentValue - 1;
+        }
+    };
+
+    // Eventos para los botones de cantidad
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const productId = e.target.closest('.quantity-btn').dataset.productId;
+            handleQuantity(productId, 'decrease');
         });
     });
-        
-    
 
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const productId = e.target.closest('.quantity-btn').dataset.productId;
+            handleQuantity(productId, 'increase');
+        });
+    });
+
+    // Evento para agregar al carrito
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const productId = e.target.closest('.add-to-cart-btn').dataset.productId;
+            const quantity = document.querySelector(`.quantity-input[data-product-id="${productId}"]`).value;
+
+            console.log(e.target);
+
+            // Emitir evento al servidor
+            socketClient.emit('addToCart', {
+                productId,
+                quantity: parseInt(quantity)
+            });
+
+            // Mostrar SweetAlert
+            await Swal.fire({
+                title: '¡Producto agregado!',
+                text: `Se agregaron ${quantity} unidades al carrito`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            console.log('Producto agregado:', {
+                productId,
+                quantity: parseInt(quantity)
+            });
+        });
+    });
+});
+
+// Escuchar eventos del servidor
+socketClient.on('productAdded', (product) => {
+    console.log('Nuevo producto agregado:', product);
+    // Aquí puedes agregar lógica para actualizar la lista de productos en tiempo real
+});
+
+socketClient.on('cartUpdate', (data) => {
+    console.log('Actualización del carrito:', data);
+});
+
+socketClient.on('error', (error) => {
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error'
+    });
+});
 </script>

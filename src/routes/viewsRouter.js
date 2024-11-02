@@ -18,13 +18,14 @@ router.get('/', async (req, res) => {
     const options = {
         limit: parseInt(limit) || 10, 
         page: parseInt(page) || 1,   
-        sort: sortOrder !== null ? { priceList: sortOrder } : {}
+        sort: sortOrder !== null ? { priceList: sortOrder} : {},
         // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
     };
-    console.log(options);
+    // console.log(options);
     try {
-        const products = await productController.getPaginated(query, options);
-        console.log(products);
+        const searchQuery = { ...JSON.parse(query || '{}'), status: true };
+        const products = await productController.getPaginated(searchQuery, options);
+        // console.log(products);
         res.status(200).render('home', {products : products});
         console.log('Productos paginados y ordenados obtenidos correctamente');
     } catch (error) {
@@ -45,10 +46,12 @@ router.get('/realtimeproducts', async (req, res) => {
         sort: sortOrder !== null ? { priceList: sortOrder } : {}
         // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
     };
-    console.log(options);
+    //  console.log(options);
     try {
-        const products = await productController.getPaginated(query, options);
-        console.log(products);
+        const searchQuery = { ...JSON.parse(query || '{}'), status: true };
+        const products = await productController.getPaginated(searchQuery, options);
+
+        // console.log(products);
         res.status(200).render('realtimeproducts', {products : products});
         console.log('Productos paginados y ordenados obtenidos correctamente');
     } catch (error) {
@@ -61,7 +64,7 @@ router.get('/realtimeproducts', async (req, res) => {
  router.post('/realtimeproducts', midVal, midExists, async (req, res) => {
     
     const datoFormu = req.body;
-    console.log(datoFormu.priceList);
+    // console.log(datoFormu.priceList);
     //creacion del nuevo producto
     const newProduct = await ProductModel.create({
         code: datoFormu.code,
@@ -72,7 +75,7 @@ router.get('/realtimeproducts', async (req, res) => {
         category: datoFormu.category
     });
 
-    console.log(newProduct);
+    //  console.log(newProduct);
     
 
     socketServer.emit('newProduct', newProduct); // Emitir evento a todos los clientes conectados

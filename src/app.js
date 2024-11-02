@@ -46,9 +46,36 @@ const socketServer = new Server(httpServer);
 
 socketServer.on('connection', (socket) => {
     console.log(`cliente activo id: ${socket.id}`);
-    socket.on('addProduct', (newProduct) => {
-        socketServer.emit('productAdded', newProduct);
+    // Manejar nuevo producto
+    socket.on('addProduct', async (productData) => {
+        try {
+            // Aquí va tu lógica para guardar el producto
+            const newProduct = await productController.create(productData);
+            
+            // Emitir a todos los clientes
+            io.emit('productAdded', newProduct);
+        } catch (error) {
+            socket.emit('error', {
+                message: 'Error al agregar el producto'
+            });
+        }
     });
+
+    // Manejar agregar al carrito
+    socket.on('addToCart', (data) => {
+        try {
+            // Aquí va tu lógica del carrito
+            io.emit('cartUpdate', {
+                message: 'Carrito actualizado',
+                data: data
+            });
+        } catch (error) {
+            socket.emit('error', {
+                message: 'Error al actualizar el carrito'
+            });
+        }
+    });
+
 });
 
 export { socketServer };
