@@ -4,6 +4,9 @@ const productController = new ProductController();
 import CartController from '../../dao/cartsController.js';
 const cartController = new CartController();
 
+import CategoryController from '../../dao/categoryController.js';
+const categoryController = new CategoryController();    
+
 
 
 // Función para transformar el resultado de la paginación
@@ -102,8 +105,6 @@ const addToCart = async (data) => {
             return updatedCart;
         }
             
-        
-
     }
 
     
@@ -112,5 +113,17 @@ const addToCart = async (data) => {
 
 };
 
+const addOneProduct = async (productData) => {
+    const category = await categoryController.findByName(productData.category);
+    console.log("category: ", category);
+    productData.category = category._id;
 
-export { transformPaginationResult, indexExists, midVal, midExists, addToCart};
+    //  console.log("productData: ", productData);
+
+    const newProduct = await productController.add(productData)
+    console.log("newProduct: ", newProduct);
+    return newProduct;
+};
+
+
+export { transformPaginationResult, indexExists, midVal, midExists, addToCart, addOneProduct};

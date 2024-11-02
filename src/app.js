@@ -10,8 +10,8 @@ import config from './config.js';
 import cartsRouter from './routes/cartsRouter.js';
 import viewsRouter from './routes/viewsRouter.js';
 
-import { addToCart } from './public/js/utils.js';
-import ProductController from './dao/productController.js';
+import { addToCart, addOneProduct} from './public/js/utils.js';
+
 
 
 
@@ -55,12 +55,8 @@ socketServer.on('connection', (socket) => {
 
     // Manejar nuevo producto
     socket.on('addProduct', async (productData) => {
-        const productController = new ProductController();
-        
-            console.log("productData: ", productData);
-            // Aquí va tu lógica para guardar el producto
-            const newProduct = await productController.add(productData)
-            console.log("newProduct: ", newProduct);
+            
+            const newProduct = await addOneProduct(productData);
 
             if(newProduct){
                 // Emitir a todos los clientes
