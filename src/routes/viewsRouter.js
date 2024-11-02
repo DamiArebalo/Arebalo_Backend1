@@ -4,11 +4,13 @@ import {midVal, midExists } from '../public/js/utils.js';
 
 import ProductModel from '../dao/models/productsModel.js';
 import ProductController from '../dao/productController.js';
+import CartController from '../dao/cartsController.js';
 
 import { socketServer } from '../app.js';
 const router = Router();
 
 const productController = new ProductController();
+const cartController = new CartController();
 
 router.get('/', async (req, res) => {
     const { limit, page, sort, query} = req.query; // Agregar el parámetro sort
@@ -83,6 +85,18 @@ router.get('/realtimeproducts', async (req, res) => {
     res.redirect('/views/realtimeproducts');
 
     res.send(console.log(`Producto ${datoFormu.title} Agregado correctamente`));
+ });
+
+ router.get('/carts/:cid', async (req, res) => {
+     const cartId = req.params.cid;
+     const cart = await cartController.get({ _id: cartId });
+     console.log("cart: ", cart);
+     if (!cart) {
+         return res.status(404).send({ error: 'Carrito no encontrado', data: null });
+     }else{
+         res.status(200).render('cart', {products : cart.products, total : cart.calculatedTotal, cartId : cartId});
+     }
+     
  });
 
 

@@ -29,7 +29,11 @@ const hbs = create({
     helpers: {
         json: (context) => {
             return JSON.stringify(context);
+        },
+        getPrice: function (product) {
+            return product.offer !== 0 ? product.offer : product.priceList;
         }
+
     },
     handlebars: allowInsecurePrototypeAccess(Handlebars)
 });

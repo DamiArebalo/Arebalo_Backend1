@@ -1,0 +1,103 @@
+:root {
+    --primary-color: #a78e29;
+    --danger-color: #dc2626;
+    --success-color: #16a34a;
+    --background-color: #f3f4f6;
+    --text-color: #1f2937;
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .product-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .product-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-title {
+    font-weight: bold;
+  }
+  
+  .product-price {
+    color: var(--text-color);
+  }
+  
+  .cart-total {
+    text-align: right;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+  }
+  
+  .cart-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+  }
+  
+  .btn-danger {
+    background-color: var(--danger-color);
+    color: #ffffff;
+  }
+  
+  .btn-success {
+    background-color: var(--success-color);
+    color: #ffffff;
+  }
+  
+  .btn:hover {
+    opacity: 0.9;
+  }
+  
+  .message-container {
+    text-align: center;
+    font-size: 1.5rem;
+    margin: 2rem 0;
+  }
+  
+  .message-container p {
+    margin-bottom: 1rem;
+  }
