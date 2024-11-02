@@ -6,7 +6,7 @@ class CartController {
 
     get = async (filter = {}) => {
         try {
-            return await CartModel.find(filter).populate(config.PRODUCTS_COLLECTION).lean();
+            return await CartModel.findOne(filter).populate('products.product');
         } catch (err) {
             return err.message;
         }
@@ -22,7 +22,7 @@ class CartController {
 
     update = async (filter, updated, options = { new: true }) => {
         try {
-            return await CartModel.findOneAndUpdate(filter, updated, options).populate(config.PRODUCTS_COLLECTION).lean();
+            return await CartModel.findOneAndUpdate(filter, updated, options);
         } catch (err) {
             return err.message;
         }
@@ -36,18 +36,23 @@ class CartController {
         }
     }
 
-    updateProductQuantity = async (cartId, productId, quantity) => {
+    addProduct = async (cartId, productId) => {
         try {
             const cart = await CartModel.findById(cartId);
             if (!cart) return null;
 
-            const productIndex = cart.products.findIndex(product => product.id === productId);
-            if (productIndex !== -1) {
-                cart.products[productIndex].quantity = quantity;
-                await cart.save();
-                return cart.populate(config.PRODUCTS_COLLECTION).lean();
+            const productIndex = cart.products.findIndex(item => item.product.toString() === productId);
+
+            if (productIndex > -1) {
+                // Si el producto ya está en el carrito, incrementa la cantidad
+                cart.products[productIndex].quantity += 1;
+            } else {
+                // Si el producto no está en el carrito, agrégalo
+                cart.products.push({ product: productId, quantity: 1 });
             }
-            return null;
+
+            await cart.save();
+            return cart.populate('products.product');
         } catch (err) {
             return err.message;
         }
@@ -58,13 +63,46 @@ class CartController {
             const cart = await CartModel.findById(cartId);
             if (!cart) return null;
 
-            cart.products = cart.products.filter(product => product.id !== productId);
+            cart.products = cart.products.filter(item => item.product.toString() !== productId);
             await cart.save();
-            return cart.populate(config.PRODUCTS_COLLECTION).lean();
+            
+            return cart.populate('products.product');
+        } catch (err) {
+            return err.message;
+        }
+    }
+
+    removeAllProducts = async (cartId) => {
+        try {
+            const cart = await CartModel.findById(cartId);
+            if (!cart) return null;
+
+            cart.products = [];
+            await cart.save();
+            
+            return cart.populate('products.product');
+        } catch (err) {
+            return err.message;
+        }
+    }
+        
+
+    updateProductQuantity = async (cartId, productId, quantity) => {
+        try {
+            const cart = await CartModel.findById(cartId);
+            if (!cart) return null;
+
+            const productIndex = cart.products.findIndex(item => item.product.toString() === productId);
+            if (productIndex > -1) {
+                cart.products[productIndex].quantity = quantity;
+                await cart.save();
+                return cart.populate('products.product');
+            }
+            return null;
         } catch (err) {
             return err.message;
         }
     }
 }
 
-export default CartController
+export default CartController;

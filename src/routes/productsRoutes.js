@@ -46,8 +46,9 @@ router.get('/', async (req, res) => {
     const options = {
         limit: parseInt(limit) || 10, 
         page: parseInt(page),   
-        sort: sortOrder !== null ? { priceList: sortOrder } : {}
+        sort: sortOrder !== null ? { priceList: sortOrder } : {},
         // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
+        populate: 'category'
     };
     
     try {

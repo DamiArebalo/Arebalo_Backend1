@@ -1,6 +1,8 @@
 import ProductController from '../../dao/productController.js';
 const productController = new ProductController();
 
+
+
 // Función para transformar el resultado de la paginación
 function transformPaginationResult(products, route) {
     return {
@@ -53,4 +55,9 @@ const midExists = (req, res, next) => {
     }
 };
 
-export { transformPaginationResult, indexExists, midVal, midExists };
+const getId = async (code) => {
+    const product = await productController.get({ code: code });
+    return product ? product._id : null;
+};
+
+export { transformPaginationResult, indexExists, midVal, midExists, getId};

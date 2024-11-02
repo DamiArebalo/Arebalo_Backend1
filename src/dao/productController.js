@@ -1,6 +1,7 @@
 
 import { query } from 'express';
 import ProductModel from './models/productsModel.js';
+import config from '../config.js';
 
 
 class ProductController {
@@ -11,7 +12,7 @@ class ProductController {
             const products = await ProductModel.find()
                 .populate({
                     path: 'category',
-                    model: 'categories',
+                    model: config.CATEGORIES_COLLECTION,
                     select: 'name'
                 })
                 .lean();
@@ -62,6 +63,15 @@ class ProductController {
         try {
             const products = await ProductModel.paginate(query,options);
             return products;
+        } catch (err) {
+            return err.message;
+        }
+    }
+
+    getByCode = async (code) => {
+        try {
+            const product = await ProductModel.findOne({ code: code }, '_id'); // Solo selecciona el campo _id
+            return product ? product._id : null;
         } catch (err) {
             return err.message;
         }
