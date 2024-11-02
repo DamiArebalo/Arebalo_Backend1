@@ -5,6 +5,7 @@ import {midVal, midExists } from '../public/js/utils.js';
 import ProductModel from '../dao/models/productsModel.js';
 import ProductController from '../dao/productController.js';
 import CartController from '../dao/cartsController.js';
+import config from '../config.js';
 
 import { socketServer } from '../app.js';
 const router = Router();
@@ -21,6 +22,7 @@ router.get('/', async (req, res) => {
         limit: parseInt(limit) || 10, 
         page: parseInt(page) || 1,   
         sort: sortOrder !== null ? { priceList: sortOrder} : {},
+        populate: 'category'
         // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
     };
     // console.log(options);
@@ -45,7 +47,8 @@ router.get('/realtimeproducts', async (req, res) => {
     const options = {
         limit: parseInt(limit) || 10, 
         page: parseInt(page) || 1,   
-        sort: sortOrder !== null ? { priceList: sortOrder } : {}
+        sort: sortOrder !== null ? { priceList: sortOrder } : {},
+        populate: 'category'
         // sort: sort ? { [sort]: 1 } : {} // Ordenar por el campo proporcionado
     };
     //  console.log(options);
@@ -53,7 +56,7 @@ router.get('/realtimeproducts', async (req, res) => {
         const searchQuery = { ...JSON.parse(query || '{}'), status: true };
         const products = await productController.getPaginated(searchQuery, options);
 
-        // console.log(products);
+        console.log(products);
         res.status(200).render('realtimeproducts', {products : products});
         console.log('Productos paginados y ordenados obtenidos correctamente');
     } catch (error) {
