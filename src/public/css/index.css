@@ -118,8 +118,9 @@ li:nth-child(odd) {
 }
 
 .product-price {
-  color: #2563eb;
+  color: #302903;
   font-weight: bold;
+  
 }
 
 .product-actions {
