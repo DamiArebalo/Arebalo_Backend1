@@ -3017,3 +3017,4 @@ node_modules/mongoose-paginate-v2/src/pagination-subdocs.js
 node_modules/mongoose-paginate-v2/static/banner.jpg
 node_modules/mongoose-paginate-v2/tests/index.js
 node_modules/mongoose-paginate-v2/tsconfig.json
+.env
