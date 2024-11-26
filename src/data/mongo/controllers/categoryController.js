@@ -1,4 +1,4 @@
-import CategoryModel from './models/categoriesModel.js';
+import CategoryModel from '../models/categoriesModel.js';
 
 class CategoryController {
     constructor() {}

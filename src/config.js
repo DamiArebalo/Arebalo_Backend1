@@ -3,9 +3,9 @@ import * as url from 'url'
 
 
 const config = {
-    PORT: 8080,
+    PORT: process.env.PORT,
     DIRNAME: url.fileURLToPath(new URL('.', import.meta.url)),
-    MONGODB_URI: 'mongodb+srv://damiiarebalo:admin123@arebalobackend.qyz6l.mongodb.net/rityjust',
+    MONGODB_URI: process.env.MONGODB_URI,
     get UPLOAD_DIR() { return `${this.DIRNAME}/public/uploads` },
     PRODUCTS_COLLECTION: 'products',
     CATEGORIES_COLLECTION: 'categories',

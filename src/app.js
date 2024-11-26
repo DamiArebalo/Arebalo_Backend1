@@ -1,5 +1,15 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import "dotenv/config.js";
+import morgan from 'morgan';
+
+
+import pathHandler from './middlewares/pathHandler.mid.js';
+import errorHandler from './middlewares/errorHandler.mid.js';
+import indexRouter from './routes/indexRouter.js';
+import dbConnect from './utils/dbConnect.js';
+
+
 import { allowInsecurePrototypeAccess } from '@handlebars/allow-prototype-access';
 import { create } from 'express-handlebars';
 import { Server } from 'socket.io';
@@ -13,11 +23,16 @@ import viewsRouter from './routes/viewsRouter.js';
 import { addToCart, addOneProduct} from './public/js/utils.js';
 
 
-
-
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+
+//routes
+app.use(indexRouter);
+app.use(errorHandler);
+app.use(pathHandler);
+
 
 /**
  * Indicamos a Express que vamos a estar utilizando Handlebars
@@ -42,15 +57,18 @@ app.engine('handlebars', hbs.engine);
 app.set('views', `${config.DIRNAME}/views`);
 app.set('view engine', 'handlebars');
 
-app.use('/views', viewsRouter);
-app.use('/api/products', productRoutes);
-app.use('/static', express.static(`${config.DIRNAME}/public`));
-app.use('/api/carts', cartsRouter);
 
-const httpServer = app.listen(config.PORT, () => {
-    mongoose.connect(config.MONGODB_URI);
-    console.log(`Server activo en puerto ${config.PORT} y conectado en MongoDB`);
-});
+app.use('/', indexRouter);
+app.use('/views', viewsRouter);
+app.use('/static', express.static(`${config.DIRNAME}/public`));
+
+const ready = () =>{
+    console.log(`Server activo en puerto ${config.PORT}`);
+    dbConnect();
+
+}
+
+const httpServer = app.listen(config.PORT, ready);
 
 const socketServer = new Server(httpServer);
 

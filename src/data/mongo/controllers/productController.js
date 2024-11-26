@@ -1,6 +1,6 @@
 
 import { query } from 'express';
-import ProductModel from './models/productsModel.js';
+import ProductModel from '../models/productsModel.js';
 import config from '../config.js';
 
 

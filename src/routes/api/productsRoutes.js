@@ -11,6 +11,16 @@ const router = Router();
 const productController = new ProductController();
 const categoryController = new CategoryController();
 
+router.get('/', async (req, res, next) => {
+    try {
+        const message = 'Productos obtenidos correctamente';
+        const response = [];
+        return res.status(200).json({response, message})
+    } catch (error) {
+        return next(error);
+    }
+});
+
 //GET --> Listado de productos generales con un limite incluido
 
 router.get('/', async (req, res) => {
@@ -61,8 +71,6 @@ router.get('/', async (req, res) => {
     }
     
 });
-
-
 
 //GET --> mostrando solo un producto filtrando por su ID
 router.get('/:id', async (req, res) =>{
