@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { uploader } from "../uploader.js";
+import { uploader } from "../../uploader.js";
 
-import ProductController from "../dao/productController.js";
-import { transformPaginationResult, indexExists, midVal, midExists } from '../public/js/utils.js';
-import CategoryController from "../dao/categoryController.js";
+import ProductController from "../../data/mongo/controllers/productController.js";
+import { transformPaginationResult, indexExists, midVal, midExists } from '../../public/js/utils.js';
+import CategoryController from "../../data/mongo/controllers/categoryController.js";
+import newError from '../../utils/newError.js';
+
 
 const router = Router();
 
@@ -11,19 +13,11 @@ const router = Router();
 const productController = new ProductController();
 const categoryController = new CategoryController();
 
-router.get('/', async (req, res, next) => {
-    try {
-        const message = 'Productos obtenidos correctamente';
-        const response = [];
-        return res.status(200).json({response, message})
-    } catch (error) {
-        return next(error);
-    }
-});
+
 
 //GET --> Listado de productos generales con un limite incluido
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
 
     const route= "api/products";
     const { limit, page, sort,categoryName,available} = req.query; // Agregar el parámetro sort
@@ -31,28 +25,37 @@ router.get('/', async (req, res) => {
     const sortOrder = sort === 'desc' ? -1 : (sort === 'asc' ? 1 : null);
 
     const filter = {};
+    //si se usa categoria
     if (categoryName) {
         try {
+            //buscar la categoría
             const category = await categoryController.findByName(categoryName);
+            //si la categoría existe
             if (category) {
+                //usar el ID de la categoría encontrada
                 filter.category = category._id; // Usar el ID de la categoría encontrada
             } else {
-                return res.status(404).send({ status: "error", message: "Category not found" });
+                // si no existe, devolver error
+                newError("Category not found", 404);
             }
         } catch (error) {
-            return res.status(500).send({ status: "error", message: error.message });
+            return next(error)
         }
     }
-
+    //si se usa disponibilidad
     if (available === 'true' || available === 'false') {
-        filter.stock = available === 'true' ? { $gt: 0 } : 0; // Disponibles o No disponibles
+        //disponibles o No disponibles
+        filter.stock = available === 'true' ? { $gt: 0 } : 0; 
+        
     } else if (available !== undefined) {
-        return res.status(400).send({ error: 'El parámetro available debe ser "true" o "false".', data: null });
+        //arrojar error
+        newError("El parámetro available debe ser \"true\" o \"false\".", 400);
     } else {
         filter.stock = { $gt: 0 }; // Disponibilidad por defecto
     }
 
    // console.log(filter, categoryName, available);
+       
     const options = {
         limit: parseInt(limit) || 10, 
         page: parseInt(page),   
@@ -62,12 +65,15 @@ router.get('/', async (req, res) => {
     };
     
     try {
+        //obtener los productos paginados y ordenados
         const products = await productController.getPaginated(filter, options);
+        //transformar los resultados en el formato esperado
         const result = transformPaginationResult(products, route);
-        res.status(200).send(result);
+        //enviar el resultado
+        res.status(200).json(result);
         console.log('Productos paginados y ordenados obtenidos correctamente');
     } catch (error) {
-        res.status(500).send({ error: error.message, payload: null });
+        newError(error.message, 500);
     }
     
 });
@@ -79,9 +85,9 @@ router.get('/:id', async (req, res) =>{
     const product = await productController.get({code: code});
     
     if(!indexExists(code)){
-        res.status(404).send({ error: 'No se encuentra el producto', data: [] });
+        newError('No se encuentra el producto', 404);
     }else {
-        res.status(200).send({ error: null, data: product});
+        res.status(200).json({ error: null, data: product});
     }
     
 });
@@ -117,19 +123,19 @@ router.put('/:id', async (req, res) => {
 
     //validacion del parametro
     if(!indexExists(productCode)){
-        return res.status(404).send({ error: 'Producto no encontrado', data: null });
+        newError('Producto no encontrado', 404);   
     }
 
     // No permitir la actualización del ID
     if (updatedData.hasOwnProperty('_id')||updatedData.hasOwnProperty('code')) {
         console.warn(`Intento de modificacion de id/code: ${productCode} Bloqueado Correctamente`)
-        return res.status(400).send({ error: 'No se puede actualizar el ID/CODE del producto', data: null });
+        newError('No se puede actualizar el ID/CODE del producto', 400);
     }
 
     const updatedProduct = await productController.update(filter, updatedData);
 
     res.status(200).send({ error: null, data: updatedProduct });
-    console.log(`Producto ${await productModel.findOne({code: productCode})} actualizado correctamente`);
+    console.log(`Producto ${await productController.get({code: productCode})} actualizado correctamente`);
 });
 
 router.delete('/:code', async (req, res) => {
@@ -137,7 +143,7 @@ router.delete('/:code', async (req, res) => {
     console.log(productModel.find());
     //validacion del parametro
     if(!indexExists(productId)){
-        return res.status(404).send({ error: 'Producto no encontrado', data: null });
+        newError('Producto no encontrado', 404);
     }
 
     // Eliminar el producto del array
@@ -154,7 +160,8 @@ router.get('/stats/:limit', async (req, res) => {
         res.status(200).send({ error: null, data: stats });
         console.log('Estadísticas de productos obtenidas correctamente');
     } catch (error) {
-        res.status(500).send({ error: error.message, data: null });
+        newError(error.message, 500);
+        
     }
 });
 

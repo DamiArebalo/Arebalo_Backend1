@@ -15,10 +15,9 @@ import { create } from 'express-handlebars';
 import { Server } from 'socket.io';
 import Handlebars from 'handlebars';
 
-import productRoutes from './routes/productsRoutes.js';
+
 import config from './config.js';
-import cartsRouter from './routes/cartsRouter.js';
-import viewsRouter from './routes/viewsRouter.js';
+
 
 import { addToCart, addOneProduct} from './public/js/utils.js';
 
@@ -59,8 +58,7 @@ app.set('view engine', 'handlebars');
 
 
 app.use('/', indexRouter);
-app.use('/views', viewsRouter);
-app.use('/static', express.static(`${config.DIRNAME}/public`));
+
 
 const ready = () =>{
     console.log(`Server activo en puerto ${config.PORT}`);

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import CartController from "../dao/cartsController.js";
+import CartController from "../../data/mongo/controllers/cartsController.js";
 const router = Router();
-import ProductController from "../dao/productController.js";
+import ProductController from "../../data/mongo/controllers/productController.js";
 
 const cartController = new CartController();
 const productController = new ProductController();

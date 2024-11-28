@@ -1,10 +1,10 @@
-import ProductController from '../../dao/productController.js';
+import ProductController from '../../data/mongo/controllers/productController.js';
 const productController = new ProductController();
 
-import CartController from '../../dao/cartsController.js';
+import CartController from '../../data/mongo/controllers/cartsController.js';
 const cartController = new CartController();
 
-import CategoryController from '../../dao/categoryController.js';
+import CategoryController from '../../data/mongo/controllers/categoryController.js';
 const categoryController = new CategoryController();    
 
 
