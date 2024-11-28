@@ -1,5 +1,5 @@
 import CartModel from '../models/cartsModel.js';
-import config from '../config.js';
+
 
 class CartController {
     constructor() {}

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import config from '../../config.js';
+import config from '../../../config.js';
 import categoryModel from './categoriesModel.js';
 import mongoosePaginate from 'mongoose-paginate-v2';
 
