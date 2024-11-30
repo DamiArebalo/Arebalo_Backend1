@@ -12,6 +12,7 @@ const schema = new mongoose.Schema({
         _id: false
     }],
     total: { type: Number, default: 0 },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: config.USERS_COLLECTION, required: true },
     
 }, {
     toJSON: { virtuals: true },

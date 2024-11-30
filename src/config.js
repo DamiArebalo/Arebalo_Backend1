@@ -9,7 +9,8 @@ const config = {
     get UPLOAD_DIR() { return `${this.DIRNAME}/public/uploads` },
     PRODUCTS_COLLECTION: 'products',
     CATEGORIES_COLLECTION: 'categories',
-    CARTS_COLLECTION: 'carts'
+    CARTS_COLLECTION: 'carts',
+    USERS_COLLECTION: 'users'
 
 };
 
