@@ -1,10 +1,7 @@
 import { model, Schema } from "mongoose";
 
 const collection = "users"
-// ingles
-// plural
-// minusculas
-// representativo del recurso
+
 const schema = new Schema({
     name: { type: String },
     email: { type: String, required: true, index: true, unique: true },
