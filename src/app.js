@@ -2,6 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import "dotenv/config.js";
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+
+import mongoStore from 'connect-mongo';
 
 
 import pathHandler from './middlewares/pathHandler.mid.js';
@@ -26,6 +30,11 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+app.use(cookieParser(process.env.SECRET_KEY));
+app.use(session({ 
+    secret: process.env.SECRET_KEY, resave: true, saveUninitialized: true,
+    store: new mongoStore({ mongoUrl: process.env.MONGODB_URI, ttl: 60*60*24 })
+}));
 
 //routes
 app.use(indexRouter);
@@ -55,10 +64,6 @@ const hbs = create({
 app.engine('handlebars', hbs.engine);
 app.set('views', `${config.DIRNAME}/views`);
 app.set('view engine', 'handlebars');
-
-
-app.use('/', indexRouter);
-
 
 const ready = () =>{
     console.log(`Server activo en puerto ${config.PORT}`);

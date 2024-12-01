@@ -1,14 +1,15 @@
-import newError from '../utils/newError.js';
 import { verifyHashUtil } from '../utils/hash.util.js';
 
 function verifyHash(req, res, next) {
 
     const { password, passwordConfirmation } = req.body;
     if (!password || !passwordConfirmation) {
-        newError("Faltan datos", 400);   
+        res.json400("Faltan datos");
+        
     }
     if (!verifyHashUtil(password, passwordConfirmation)) {
-        newError("Las contraseñas no coinciden", 400);
+        res.json400("Las contraseñas no coinciden");
+        
     }
     return next();
 

@@ -5,7 +5,7 @@ import ProductController from "../../data/mongo/controllers/productController.js
 import { indexExists, midVal, midExists } from '../../utils/validateProducts.js';
 import transformPaginationResult from '../../utils/transformPaginated.js';
 import CategoryController from "../../data/mongo/controllers/categoryController.js";
-import newError from '../../utils/newError.js';
+
 
 
 class ProductsApiRouter extends CustomRouter {
@@ -39,19 +39,16 @@ async function listProducts(req, res, next) {
     const filter = {};
     //si se usa categoria
     if (categoryName) {
-        try {
-            //buscar la categoría
-            const category = await categoryController.findByName(categoryName);
-            //si la categoría existe
-            if (category) {
-                //usar el ID de la categoría encontrada
-                filter.category = category._id; // Usar el ID de la categoría encontrada
-            } else {
-                // si no existe, devolver error
-                newError("Category not found", 404);
-            }
-        } catch (error) {
-            return next(error)
+
+        //buscar la categoría
+        const category = await categoryController.findByName(categoryName);
+        //si la categoría existe
+        if (category) {
+            //usar el ID de la categoría encontrada
+            filter.category = category._id; // Usar el ID de la categoría encontrada
+        } else {
+            // si no existe, devolver error
+            res.json404();
         }
     }
     //si se usa disponibilidad
@@ -61,7 +58,7 @@ async function listProducts(req, res, next) {
 
     } else if (available !== undefined) {
         //arrojar error
-        newError("El parámetro available debe ser \"true\" o \"false\".", 400);
+        res.json400("El parámetro available debe ser \"true\" o \"false\".");
     } else {
         filter.stock = { $gt: 0 }; // Disponibilidad por defecto
     }
@@ -79,8 +76,8 @@ async function listProducts(req, res, next) {
     //transformar los resultados en el formato esperado
     const result = transformPaginationResult(products, route);
     //enviar el resultado
-    res.status(200).json(result);
-    console.log('Productos paginados y ordenados obtenidos correctamente');
+    res.json200({response: result, message: "Products found"});
+    
 }
 
 //GET --> mostrando solo un producto filtrando por su ID
@@ -90,9 +87,10 @@ async function listOneProduct(req, res) {
     const product = await productController.get({ _id: id });
 
     if (!indexExists(id)) {
-        newError('No se encuentra el producto', 404);
+        res.json404();
+        
     } else {
-        res.status(200).json({ error: null, data: product });
+        res.json200({ response: product, message: "Product found" });
     }
 
 }
@@ -105,7 +103,7 @@ async function updateProduct(req, res) {
 
     //validacion del parametro
     if (!indexExists(productCode)) {
-        newError('Producto no encontrado', 404);
+        res.json404();
     }
 
     if (productCode == await productController.get({ _id: productCode })) {
@@ -114,17 +112,16 @@ async function updateProduct(req, res) {
         filter = { code: productCode };
     }
 
-    console.log(await productController.get({ filter }));
+    //console.log(await productController.get({ filter }));
 
     // No permitir la actualización del ID
     if (updatedData.hasOwnProperty('_id') || updatedData.hasOwnProperty('code')) {
         console.warn(`Intento de modificacion de id/code: ${productCode} Bloqueado Correctamente`)
-        newError('No se puede actualizar el ID/CODE del producto', 400);
+        res.json400('No se puede actualizar el ID/CODE del producto');
     }
 
     const updatedProduct = await productController.update(filter, updatedData);
-
-    res.status(200).json({ error: null, data: updatedProduct });
+    res.json200({ response: updatedProduct, message: "Product updated" });
     console.log(`Producto ${await productController.get({ filter })} actualizado correctamente`);
 }
 
@@ -142,8 +139,8 @@ async function createProduct(req, res) {
         stock: datoFormu.stock,
         category: datoFormu.category
     });
-
-    res.status(200).json({ error: null, data: newProduct, thumbnail: req.file });
+    res.json200({ response: { newProduct, thumbnail: req.file }, message: "Product added" });
+    
     res.send(console.log(`Producto ${datoFormu.title} Agregado correctamente`));
 
 }
@@ -153,14 +150,13 @@ async function deleteProduct(req, res) {
     console.log(productModel.find());
     //validacion del parametro
     if (!indexExists(productId)) {
-        newError('Producto no encontrado', 404);
+        res.json404();
     }
 
     // Eliminar el producto del array
     const deletedProduct = productController.delete({ code: productId });
-
-    res.status(200).json({ error: null, data: deletedProduct });
-    console.log(`Producto con ID ${productId} eliminado correctamente`);
+    res.json200({ response: deletedProduct, message: "Product deleted" });
+    
 }
 
 async function statsProducts(req, res) {
@@ -168,8 +164,7 @@ async function statsProducts(req, res) {
     const limit = parseInt(req.params.limit);
 
     const stats = await productController.stats(limit);
-    res.status(200).json({ error: null, data: stats });
-    console.log('Estadísticas de productos obtenidas correctamente');
+    res.json200({ response: stats, message: "Statistics found" });
 }
 
 let productsRouter = new ProductsApiRouter();

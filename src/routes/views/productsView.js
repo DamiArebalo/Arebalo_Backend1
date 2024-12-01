@@ -1,7 +1,7 @@
 import CustomRouter from '../../utils/customRouter.util.js';
 import { socketServer } from '../../app.js';
 
-import newError from '../../utils/newError.js';
+
 import ProductController from '../../data/mongo/controllers/productController.js';
 
 import { midVal, midExists } from '../../utils/validateProducts.js';
@@ -42,6 +42,7 @@ async function listProducts(req, res) {
     const searchQuery = { ...JSON.parse(query || '{}'), status: true };
     const products = await productController.getPaginated(searchQuery, options);
     // console.log(products);
+    
     res.status(200).render('home', { products: products });
     console.log('Productos paginados y ordenados obtenidos correctamente');
 
