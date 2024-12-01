@@ -1,18 +1,16 @@
 import CustomRouter from "../../utils/customRouter.util.js";
 import UserController from "../../data/mongo/controllers/userController.js";
 import session from "express-session";
-import isUser from "../../middlewares/isUser.mid.js";
-import isValidUserData from "../../middlewares/isValidUserData.mid.js";
-import { createHashUtil, verifyHashUtil } from "../../utils/hash.util.js";
-
+import passportLocal from "../../middlewares/passport.mid.js";
+import { response } from "express";
 class SessionApiRouter extends CustomRouter {
     constructor() {
         super();
         this.init();
     }
     init = () => {
-        this.create("/register",isValidUserData,isUser, register)
-        this.create("/login", login)
+        this.create("/register",passportLocal.authenticate("register", {session: false}), register)
+        this.create("/login",passportLocal.authenticate("login", {session: false}), login)
         this.create("/logout", logout)
     }
 }
@@ -26,30 +24,16 @@ const userController = new UserController()
 
 
 async function register(req, res,) {
-    const { email, password } = req.body
-    
-    const passwordHash = createHashUtil(password);
-    
     //middlewares
+    const response = req.user
     const message = "user registered"
-
-    const data = req.body
-    data.password = passwordHash;
-
-    const response = await userController.create(data)
-    return res.json201({ response, message })
+    return res.json201( response, message )
 
 }
 async function login(req, res) {
-    //middlewares
-
-    req.session.online = true;
-    req.session.email = req.body.email;
-    req.session.password = req.body.password;
-
     const message = "User Loged IN"
-    const response = await userController.read()
-    return res.json200({ response, message })
+    const response = req.user._id
+    return res.json200({ "user_id": response, message })
 
 }
 

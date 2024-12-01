@@ -36,10 +36,7 @@ app.use(session({
     store: new mongoStore({ mongoUrl: process.env.MONGODB_URI, ttl: 60*60*24 })
 }));
 
-//routes
-app.use(indexRouter);
-app.use(errorHandler);
-app.use(pathHandler);
+
 
 
 /**
@@ -64,6 +61,11 @@ const hbs = create({
 app.engine('handlebars', hbs.engine);
 app.set('views', `${config.DIRNAME}/views`);
 app.set('view engine', 'handlebars');
+
+//routes
+app.use(indexRouter);
+app.use(pathHandler);
+app.use(errorHandler);
 
 const ready = () =>{
     console.log(`Server activo en puerto ${config.PORT}`);
