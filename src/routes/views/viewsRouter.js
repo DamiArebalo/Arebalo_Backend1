@@ -2,6 +2,7 @@ import CustomRouter from "../../utils/customRouter.util.js";
 
 import productsRouter from "./productsView.js";
 import cartsRouter from "./cartsView.js";
+import homeRouter from "./homeview.js";
 
 
 
@@ -13,6 +14,8 @@ class ViewsIndexRouter extends CustomRouter {
     init = () => {
         this.use("/products", productsRouter);
         this.use("/carts", cartsRouter);
+        this.use("/home", homeRouter);
+
     }
 }
 

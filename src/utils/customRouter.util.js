@@ -1,12 +1,15 @@
 import { Router } from "express";
+import UserController from "../data/mongo/controllers/userController.js";
+
+const userController = new UserController();
 
 class CustomRouter {
     constructor() {
         this._router = Router();
     }
+
     getRouter = () => this._router;
-    // applyCallbacks() depende de todos los middlewares que necesite ejecutar
-    // mapeamos los middlewares para que se ejecuten cada uno con (req, res, next)
+
     _applyCallbacks = (callbacks) =>
         callbacks.map((cb) => async (req, res, next) => {
             try {
@@ -15,6 +18,7 @@ class CustomRouter {
                 return next(error);
             }
         });
+
     responses = (req, res, next) => {
         res.json200 = (response, message) =>
             res.status(200).json({ response, message });
@@ -26,12 +30,76 @@ class CustomRouter {
         res.json404 = () => res.status(404).json({ error: "Not found!" });
         return next();
     };
-    create = (path, ...cbs) => this._router.post(path,this.responses, this._applyCallbacks(cbs));
-    read = (path, ...cbs) => this._router.get(path,this.responses, this._applyCallbacks(cbs));
-    update = (path, ...cbs) => this._router.put(path,this.responses, this._applyCallbacks(cbs));
+
+    // policies = (policies) => async (req, res, next) => {
+    //     try {
+    //         console.log(policies);
+    //         if (!Array.isArray(policies)) {
+    //             throw new Error('Policies should be an array');
+    //         }
+            
+    //         if (policies.includes("PUBLIC")) return next();
+    //         const token = req?.cookies?.token;
+    //         if (!token) return res.json401();
+    //         const data = jwt.verify(token, process.env.SECRET);
+    //         const { role, user_id } = data;
+    //         if (!role || !user_id) return res.json401();
+    //         if (
+    //             (policies.includes("USER") && role === "USER") ||
+    //             (policies.includes("ADMIN") && role === "ADMIN")
+    //         ) {
+    //             const user = await readById(user_id);
+    //             if (!user) return res.json401();
+    //             req.user = user;
+    //             return next();
+    //         }
+    //         return res.json403();
+    //     } catch (error) {
+    //         return res.json400(error.message);
+    //     }
+    // };
+
+    create = (path, ...cbs) =>
+        this._router.post(
+            path,
+            this.responses,
+            //this.policies(policies),
+            this._applyCallbacks(cbs)
+        );
+
+    read = (path, ...cbs) =>
+        this._router.get(
+            path,
+            this.responses,
+            // this.policies(policies),
+            this._applyCallbacks(cbs)
+        );
+
+    update = (path, ...cbs) =>
+        this._router.put(
+            path,
+            this.responses,
+            // this.policies(policies),
+            this._applyCallbacks(cbs)
+        );
+
     destroy = (path, ...cbs) =>
-        this._router.delete(path,this.responses, this._applyCallbacks(cbs));
-    use = (path, ...cbs) => this._router.use(path, this._applyCallbacks(cbs));
+        this._router.delete(
+            path,
+            this.responses,
+            // this.policies(policies),
+            this._applyCallbacks(cbs)
+        );
+
+    use = (path, ...cbs) =>
+        this._router.use(
+            path,
+            this.responses,
+            // this.policies(policies),
+            this._applyCallbacks(cbs)
+        );
 }
 
-export default CustomRouter;
+export default CustomRouter; 
+
+

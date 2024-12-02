@@ -1,14 +1,26 @@
 <div class="container">
-    <h1>Lista de Productos</h1>
+    <h1 class="text-center mb-4">Bienvenido a Mi Tienda</h1>
+    
+    {{#if isAuthenticated}}
+        <p class="text-center">Hola, {{user.name}}!</p>
+        {{#if isAdmin}}
+            <p class="text-center">Tienes acceso al <a href="/admin">panel de administración</a>.</p>
+        {{else}}
+            <p class="text-center">Explora nuestros productos a continuación.</p>
+        {{/if}}
+    
+    {{/if}}
+
+    <h2 class="text-center mt-5 mb-4">Lista de Productos</h2>
     
     <ul class="product-list">
         {{#each products.docs}}
             <li class="product-item">
                 <div class="product-info">
-                    <span class="product-code">code:{{this.code}}</span>
-                    <span class="product-title"> title: {{this.title}}</span>
-                    <span class="product-description">description: {{this.description}}</span>
-                    <span class="category-name">category: {{this.category.name}}</span>
+                    <span class="product-code">Código: {{this.code}}</span>
+                    <span class="product-title">{{this.title}}</span>
+                    <span class="product-description">{{this.description}}</span>
+                    <span class="category-name">Categoría: {{this.category.name}}</span>
                     <span class="product-stock">Stock: {{this.stock}}</span>
                     <span class="product-price">${{this.priceList}}</span>
                 </div>
@@ -39,13 +51,17 @@
         {{/each}}
     </ul>
 
-    <nav aria-label="Page navigation example">
+    <nav aria-label="Navegación de páginas" class="mt-4">
         <ul class="pagination justify-content-center">
             {{#if products.hasPrevPage}}
                 <li class="page-item">
-                    <a class="page-link" href="/views/?page={{products.prevPage}}&limit={{products.limit}}" aria-label="Previous">
+                    <a class="page-link" href="/?page={{products.prevPage}}&limit={{products.limit}}" aria-label="Anterior">
                         <i class="fa fa-chevron-left"></i>
                     </a>
+                </li>
+            {{else}}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa fa-chevron-left"></i></span>
                 </li>
             {{/if}}
             <li class="page-item disabled">
@@ -53,9 +69,13 @@
             </li>
             {{#if products.hasNextPage}}
                 <li class="page-item">
-                    <a class="page-link" href="/views/?page={{products.nextPage}}&limit={{products.limit}}" aria-label="Next">
+                    <a class="page-link" href="/?page={{products.nextPage}}&limit={{products.limit}}" aria-label="Siguiente">
                         <i class="fa fa-chevron-right"></i>
                     </a>
+                </li>
+            {{else}}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa fa-chevron-right"></i></span>
                 </li>
             {{/if}}
         </ul>
@@ -63,39 +83,67 @@
 </div>
 
 <script>
-    import ProductController from '../dao/productController.js';
-    const productController = new ProductController();
+    document.addEventListener('DOMContentLoaded', function() {
+        const handleQuantity = (productId, action) => {
+            const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+            const currentValue = parseInt(input.value);
+            const maxStock = parseInt(input.max);
 
-     // Manejador de cantidad
-    const handleQuantity = (productId, action) => {
-        const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
-        const currentValue = parseInt(input.value);
-        const maxStock = parseInt(input.max);
+            if (action === 'increase' && currentValue < maxStock) {
+                input.value = currentValue + 1;
+            } else if (action === 'decrease' && currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        };
 
-        if (action === 'increase' && currentValue < maxStock) {
-            input.value = currentValue + 1;
-        } else if (action === 'decrease' && currentValue > 1) {
-            input.value = currentValue - 1;
-        }
-    };
+        document.querySelectorAll('.minus-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.closest('.quantity-btn').dataset.productId;
+                handleQuantity(productId, 'decrease');
+            });
+        });
 
-    // Eventos para los botones de cantidad
-    document.querySelectorAll('.minus-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const productId = e.target.closest('.quantity-btn').dataset.productId;
-            handleQuantity(productId, 'decrease');
+        document.querySelectorAll('.plus-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const productId = e.target.closest('.quantity-btn').dataset.productId;
+                handleQuantity(productId, 'increase');
+            });
+        });
+
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const productId = e.target.dataset.productId;
+                const quantity = document.querySelector(`.quantity-input[data-product-id="${productId}"]`).value;
+                
+                try {
+                    const response = await fetch('/api/cart/add', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productId, quantity }),
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: '¡Éxito!',
+                            text: 'Producto agregado al carrito',
+                            icon: 'success',
+                            confirmButtonText: 'Ok'
+                        });
+                    } else {
+                        throw new Error('Error al agregar al carrito');
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'No se pudo agregar el producto al carrito',
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
+                }
+            });
         });
     });
-
-    document.querySelectorAll('.plus-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const productId = e.target.closest('.quantity-btn').dataset.productId;
-            handleQuantity(productId, 'increase');
-        });
-    });
-
-
 </script>
-
-
 

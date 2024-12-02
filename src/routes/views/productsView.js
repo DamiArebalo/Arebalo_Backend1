@@ -14,7 +14,7 @@ class ProductsViewRouter extends CustomRouter {
         this.init();
     }
     init = () => {
-        this.read('/products', listProducts)
+        this.read('/', listProducts)
         this.read('/realtimeproducts', listProducts)
         this.create('/realtimeproducts', midVal, midExists, createProduct)
     }

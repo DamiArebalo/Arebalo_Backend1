@@ -2,7 +2,11 @@ function pathHandler(req, res, next) {
     const message = `${req.method} ${req.url} ENPOINT NOT FOUND`;
     const statusCode = 404;
 
-    return res.status(statusCode).json({message});
+    const error = new Error(message);
+    error.statusCode = statusCode;
+    throw error;
+
+   
 }
 
 export default pathHandler;

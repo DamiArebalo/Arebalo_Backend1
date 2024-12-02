@@ -1,0 +1,21 @@
+<div class="auth-container">
+    <h2 class="auth-title">Iniciar Sesión</h2>
+    <form action="./login" method="POST" class="auth-form" novalidate>
+        <div class="form-group">
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" id="email" name="email" required class="form-input">
+            <div class="invalid-feedback">Por favor, ingresa un email válido.</div>
+        </div>
+        <div class="form-group">
+            <label for="password" class="form-label">Contraseña:</label>
+            <input type="password" id="password" name="password" required class="form-input">
+            <div class="invalid-feedback">Por favor, ingresa tu contraseña.</div>
+        </div>
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-sign-in-alt"></i>
+            Iniciar Sesión
+        </button>
+    </form>
+    <p class="auth-switch">¿No tienes una cuenta? <a href="./register">Regístrate</a></p>
+</div>
+<script src="/static/js/auth.js"></script>
