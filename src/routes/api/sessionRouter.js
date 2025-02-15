@@ -12,10 +12,36 @@ class SessionApiRouter extends CustomRouter {
         this.init();
     }
     init = () => {
-        this.create("/register",passportLocal.authenticate("register", {session: false}), register)
-        this.create("/login",passportLocal.authenticate("login", {session: false}), login)
         this.create("/logout", logout)
+        this.read("/current", dataOnline)
     }
+}
+
+async function dataOnline(req, res) {
+    const message = "User Online"
+    
+    //recuperar el token
+    const token = req.cookies.authToken;
+    console.log("token: ", token);
+    //verificar si existe el token
+    const verifydata = verifyTokenUtil(token);
+    console.log(verifydata);
+
+    const user = await userController.readById(verifydata._id)
+
+    const dataUser = {
+        _id: user._id,
+        role: user.role,
+        isOnline: true,
+        name: user.name,
+    }
+   
+
+    if(user){
+        return res.json200({ token, verifydata,dataUser, message })
+       
+    }   
+    return res.json401()
 }
 
 let sessionApiRouter = new SessionApiRouter();
