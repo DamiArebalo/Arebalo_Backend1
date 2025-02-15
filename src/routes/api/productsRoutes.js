@@ -1,5 +1,4 @@
 import CustomRouter from "../../utils/customRouter.util.js";
-import { uploader } from "../../uploader.js";
 
 import ProductController from "../../data/mongo/controllers/productController.js";
 import { indexExists, midVal, midExists } from '../../utils/validateProducts.js';
@@ -14,12 +13,13 @@ class ProductsApiRouter extends CustomRouter {
         this.init();
     }
     init = () => {
-        this.create('/', midVal, midExists, uploader.single('thumbnail'), createProduct)
-        this.read('/', listProducts)
+        this.create('/', midVal, midExists, createProduct)
+        this.read("/", listProducts)
         this.read('/:id', listOneProduct)
         this.update('/:id', updateProduct)
         this.destroy('/:id', deleteProduct)
         this.read('/stats/:limit', statsProducts)
+       
     }
 }
 

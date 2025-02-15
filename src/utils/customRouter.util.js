@@ -1,7 +1,4 @@
 import { Router } from "express";
-import UserController from "../data/mongo/controllers/userController.js";
-
-const userController = new UserController();
 
 class CustomRouter {
     constructor() {
@@ -30,36 +27,7 @@ class CustomRouter {
         res.json404 = () => res.status(404).json({ error: "Not found!" });
         return next();
     };
-
-    // policies = (policies) => async (req, res, next) => {
-    //     try {
-    //         console.log(policies);
-    //         if (!Array.isArray(policies)) {
-    //             throw new Error('Policies should be an array');
-    //         }
-            
-    //         if (policies.includes("PUBLIC")) return next();
-    //         const token = req?.cookies?.token;
-    //         if (!token) return res.json401();
-    //         const data = jwt.verify(token, process.env.SECRET);
-    //         const { role, user_id } = data;
-    //         if (!role || !user_id) return res.json401();
-    //         if (
-    //             (policies.includes("USER") && role === "USER") ||
-    //             (policies.includes("ADMIN") && role === "ADMIN")
-    //         ) {
-    //             const user = await readById(user_id);
-    //             if (!user) return res.json401();
-    //             req.user = user;
-    //             return next();
-    //         }
-    //         return res.json403();
-    //     } catch (error) {
-    //         return res.json400(error.message);
-    //     }
-    // };
-
-    create = (path, ...cbs) =>
+    create = (path, ...cbs) =>{
         this._router.post(
             path,
             this.responses,
@@ -67,7 +35,9 @@ class CustomRouter {
             this._applyCallbacks(cbs)
         );
 
-    read = (path, ...cbs) =>
+    };
+    read = (path, ...cbs) =>{
+        console.log("path: "+path);
         this._router.get(
             path,
             this.responses,
@@ -75,7 +45,8 @@ class CustomRouter {
             this._applyCallbacks(cbs)
         );
 
-    update = (path, ...cbs) =>
+    };
+    update = (path, ...cbs) =>{
         this._router.put(
             path,
             this.responses,
@@ -83,7 +54,8 @@ class CustomRouter {
             this._applyCallbacks(cbs)
         );
 
-    destroy = (path, ...cbs) =>
+    };
+    destroy = (path, ...cbs) =>{
         this._router.delete(
             path,
             this.responses,
@@ -91,13 +63,17 @@ class CustomRouter {
             this._applyCallbacks(cbs)
         );
 
-    use = (path, ...cbs) =>
+    };
+    use = (path, ...cbs) =>{
         this._router.use(
             path,
             this.responses,
             // this.policies(policies),
             this._applyCallbacks(cbs)
         );
+
+    };
+        
 }
 
 export default CustomRouter; 

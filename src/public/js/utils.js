@@ -5,7 +5,12 @@ import CartController from '../../data/mongo/controllers/cartsController.js';
 const cartController = new CartController();
 
 import CategoryController from '../../data/mongo/controllers/categoryController.js';
-const categoryController = new CategoryController();    
+const categoryController = new CategoryController(); 
+
+import UserController from '../../data/mongo/controllers/userController.js';
+const userController = new UserController();
+
+import { verifyTokenUtil } from '../../utils/token.util.js';
 
 
 
@@ -74,5 +79,22 @@ const addOneProduct = async (productData) => {
     return newProduct;
 };
 
+const isAdmin = async (user) => {
+    const userRole = await user.getRole();
+    console.log("userRole: ", userRole);
+    return userRole === "admin";
+};
 
-export {  addToCart, addOneProduct};
+const getUser = async (req) => {
+    const verifydata = verifyTokenUtil(req.token)
+    console.log(verifydata);
+
+    const userLog = await userController.readById(verifydata._id)
+    console.log(userLog);
+    
+}
+
+
+
+
+export {  addToCart, addOneProduct, isAdmin, getUser};

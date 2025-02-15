@@ -1,28 +1,54 @@
-const $$selector = document.querySelector("#login");
 
-$$selector.addEventListener("click", async (e) => {
+const $$loginBtn = document.querySelector("#login");
+const $$loginForm = document.querySelector("#loginForm");
+const socket = io();
+
+console.log("socket: ", socket);
+console.log("loginBtn: ", $$loginBtn);
+console.log("loginForm: ", $$loginForm);
+
+$$loginBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     try {
+        const formData = new FormData($$loginForm);
+        const data = Object.fromEntries(formData); // Convierte FormData a objeto
+        const jsonData = JSON.stringify(data); // Convierte el objeto a JSON
+        console.log(jsonData);
 
-        const data ={
-            email: document.querySelector("#email").value,
-            password : document.querySelector("#password").value
-        }
         const options = {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(data)
+            headers: {"Content-Type":"application/json"},
+            body: jsonData
         };
 
-        const response = await fetch("api/sessions/login", options);
-        // console.log(response);
+        //escuchar evento de error
+        socket.on('errorLogin', (data) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: JSON.stringify(data.err),
+                timer: 3000
+            })
+        });
 
-        response = await response.json();
+        //escuchar evento de login
+        socket.on('loged', (data) => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Login exitoso',
+                text: data.message.message,
+                timer: 3000
+            }).then(() => {
+                window.location.href = '/views/home';
+            });
+        });
 
-        alert(response.message);
+        console.log("antes del fetch");
 
-       
+        let response = await fetch($$loginForm.action, options);
 
+        console.log("despues del fetch");
+        
         
     } catch (error) {
         console.error(error);

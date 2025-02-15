@@ -43,7 +43,10 @@ async function listProducts(req, res) {
     const products = await productController.getPaginated(searchQuery, options);
     // console.log(products);
     
-    res.status(200).render('home', { products: products });
+    res.status(200).render('home', { 
+        products: products,
+        route: "/views/products" 
+    });
     console.log('Productos paginados y ordenados obtenidos correctamente');
 
 

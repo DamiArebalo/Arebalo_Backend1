@@ -12,5 +12,5 @@ function verifyHashUtil(password, hashpassword) {
     return verify;
 }
 
-export { createHashUtil, verifyHashUtil };
+export { createHashUtil, verifyHashUtil};
 

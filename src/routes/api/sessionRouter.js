@@ -1,8 +1,11 @@
 import CustomRouter from "../../utils/customRouter.util.js";
-import UserController from "../../data/mongo/controllers/userController.js";
+
 import session from "express-session";
 import passportLocal from "../../middlewares/passport.mid.js";
-import { response } from "express";
+import UserController from "../../data/mongo/controllers/userController.js";
+import { createTokenUtil, finishTokenUtil, verifyTokenUtil } from "../../utils/token.util.js";
+const userController = new UserController()
+
 class SessionApiRouter extends CustomRouter {
     constructor() {
         super();
@@ -20,7 +23,7 @@ sessionApiRouter = sessionApiRouter.getRouter();
 
 export default sessionApiRouter
 
-const userController = new UserController()
+
 
 
 async function register(req, res,) {
@@ -31,14 +34,19 @@ async function register(req, res,) {
 
 }
 async function login(req, res) {
+
     const message = "User Loged IN"
-    const response = req.user._id
-    return res.json200({ "user_id": response, message })
+
+
+    const response = req.token
+    return res.json200({ response, message })
 
 }
 
 async function online(req, res) {
+
     const message = "User Online"
+
     const session = req.session
     if(req.session.online === true){
         return res.json200({ session, message })
@@ -51,4 +59,23 @@ async function logout(req, res) {
     req.session.destroy();
     const message = "User Loged OUT"
     return res.json200({ session, message })
+}
+
+async function onlineToken(req, res) {
+
+    const message = "User Online"
+
+    const verifydata = verifyTokenUtil(req.token)
+    console.log(verifydata);
+
+    const user = await userController.readById(verifydata._id)
+    console.log(user.role);
+    
+    if(user){
+        return res.json200({ user, message })
+       
+    }else{
+        return res.json401()
+    }
+    
 }

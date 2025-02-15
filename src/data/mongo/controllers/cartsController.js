@@ -96,10 +96,10 @@ class CartController {
 
             } 
 
-            console.log(cart);
+            //console.log(cart);
             const productIndex = cart.products.findIndex(item => item.product.toString() === productId.toString());
             if (productIndex > -1) {
-                cart.products[productIndex].quantity = quantity;
+                cart.products[productIndex].quantity += quantity;
                 await cart.save();
                 return cart.populate('products.product');
             }else{
@@ -136,6 +136,47 @@ class CartController {
             return err.message;
         }
     }
+
+    
+    findProductExist = async (cartId, productId) => {
+        try {
+            const cart = await CartModel.findById(cartId);
+            if (!cart) return null;
+            
+            const productExist = cart.products.some(item => item.product.toString() === productId.toString());
+            //console.log("existe?: "+productExist);
+            return productExist;
+            
+        } catch (err) {
+            return false;
+        }
+    }
+
+    findProduct = async (cartId, productId) => {
+        try {
+            const cart = await CartModel.findById(cartId);
+            if (!cart) return -1; 
+            
+            const productIndex = cart.products.findIndex(item => item.product.toString() === productId.toString());
+            //console.log("Índice del producto: " + productIndex);
+            return productIndex; 
+            
+        } catch (err) {
+            return -1; 
+        }
+    }
+
+    userExist = async (userId) => {
+        try {
+            const cart = await CartModel.findOne({ user: userId });
+            return cart ? cart : false;
+        } catch (err) {
+            console.error('Error al verificar la existencia del usuario en el carrito:', err);
+            return false;
+        }
+    }
+    
+    
 }
 
 export default CartController;

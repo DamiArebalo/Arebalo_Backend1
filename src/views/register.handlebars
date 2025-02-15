@@ -1,11 +1,16 @@
 <div class="auth-container">
     <h2 class="auth-title">Registro</h2>
-    <form action="./register" method="POST" class="auth-form" novalidate>
+    <form action="../home/register" method="POST" id="registerForm">
         <div class="form-group">
             <label for="name" class="form-label">Nombre:</label>
             <input type="text" id="name" name="name" required class="form-input" minlength="2">
             <div class="invalid-feedback">Por favor, ingresa un nombre válido (mínimo 2 caracteres).</div>
         </div>
+        <div class="form-group">
+            <label for="age" class="form-label">Edad:
+            <input type="number" id="age" name="age" required class="form-input" min="0" max="100">
+        </div>
+        
         <div class="form-group">
             <label for="email" class="form-label">Email:</label>
             <input type="email" id="email" name="email" required class="form-input">
@@ -16,11 +21,57 @@
             <input type="password" id="password" name="password" required class="form-input" minlength="6">
             <div class="invalid-feedback">La contraseña debe tener al menos 6 caracteres.</div>
         </div>
-        <button type="submit" class="submit-btn">
+        <button type="button" class="submit-btn" id="register">
             <i class="fas fa-user-plus"></i>
             Registrarse
         </button>
     </form>
     <p class="auth-switch">¿Ya tienes una cuenta? <a href="/views/home/login">Inicia sesión</a></p>
 </div>
-<script src="/static/js/auth.js"></script>
+<script src="/static/js/register.js"></script>
+{{!-- <script >
+    const $$registerForm = document.querySelector("#registerForm");
+
+    console.log($$registerForm);
+    const $$registerBtn = document.querySelector("#register");
+    console.log($$registerBtn);
+    $$registerBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const formData = new FormData($$registerForm);
+        const data = Object.fromEntries(formData); // Convierte FormData a objeto
+        const jsonData = JSON.stringify(data); // Convierte el objeto a JSON
+        console.log(jsonData);
+
+        const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: jsonData
+        };
+
+        try {
+            console.log("antes del fetch");
+            const response = await fetch($$registerForm.action, options);
+            console.log("response: ", response);
+            console.log("despues del fetch");
+        
+            if(response.ok) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Registro exitoso',
+                    text: result.message,
+                    time: 1500
+                }).then(() => {
+                    window.location.href = '/views/home/login';
+                });
+            }else{
+                throw new Error('Error al registrar');
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error en el registro',
+                text: 'Ocurrió un error al registrar. Inténtalo nuevamente.'
+            });
+        }
+    });
+</script> --}}
