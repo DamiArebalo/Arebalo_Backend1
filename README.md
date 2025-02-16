@@ -6,16 +6,13 @@
 
 ## 📚 Tabla de Contenidos
 - [Descripción del Proyecto](#descripción-del-proyecto)
-- [Estructura de Archivos](#estructura-de-archivos)
 - [Componentes Principales](#componentes-principales)
   - [app.js](#appjs)
-  - [productsRoutes.js](#productsroutesjs)
-  - [cartsRouter.js](#cartsrouterjs)
-  - [viewsRouter.js](#viewsrouterjs)
-- [Controladores](#controladores)
-  - [productController.js](#productcontrollerjs)
-  - [cartsController.js](#cartscontrollerjs)
-  - [categoryController.js](#categorycontrollerjs)
+  - [customRouter.js](#customRouter.js)
+- [Mapeo de rutas](#Mapeo-de-Rutas)
+  - [indexRouter](#indexRouter.js)
+  - [apiRouter](#apiRouter.js)
+  - [viewsRouter](#viewsRouter.js)
 - [Modelos](#modelos)
 - [Vistas y Tiempo Real](#vistas-y-tiempo-real)
 - [Cómo Ejecutar Mi Código](#cómo-ejecutar-mi-código)
@@ -28,173 +25,206 @@ Este proyecto es una aplicación Node.js que utiliza Express.js para crear una A
 
 ---
 
-## 📁 Estructura de Archivos
-
-```
-.
-├── src
-│   ├── app.js
-│   ├── config.js
-│   ├── uploader.js
-│   ├── routes
-│   │   ├── productsRoutes.js
-│   │   ├── cartsRouter.js
-│   │   └── viewsRouter.js
-│   ├── dao
-│   │   ├── models
-│   │   │   ├── productsModel.js
-│   │   │   ├── cartsModel.js
-│   │   │   └── categoriesModel.js
-│   │   ├── productController.js
-│   │   ├── cartsController.js
-│   │   └── categoryController.js
-│   ├── views
-│   │   ├── home.handlebars
-|   |   ├── cart.handlebars
-│   │   ├── realTimeProducts.handlebars
-│   │   └── layouts
-│   │       └── main.handlebars
-│   └── public
-│       ├── css
-│       │   └── index.css
-│       └── js
-│           └── utils.js
-└── README.md
-```
-
----
-
 ## 🔑 Componentes Principales
 
 ### app.js
 
 Este archivo es el punto de entrada principal de la aplicación:
 
-- Configura Express y middleware necesarios
-- Establece la conexión con MongoDB
-- Configura Handlebars como motor de plantillas
-- Inicializa Socket.IO para comunicación en tiempo real
-- Define las rutas principales de la aplicación
+- **Configuración de Middleware**:
+  - **Express**: Configura Express y middleware necesarios para el manejo de peticiones.
+  - **Morgan**: Middleware para logging de peticiones.
+  - **Cookie Parser**: Para analizar cookies.
+  - **Express-session**: Manejo de sesiones con almacenamiento en MongoDB.
 
-### productsRoutes.js
+- **Configuración de Handlebars**: 
+  - Define Handlebars como motor de plantillas, especificando la extensión de los archivos y el layout por defecto.
 
-Maneja todas las operaciones relacionadas con productos:
+- **Conexión a la Base de Datos**: Establece la conexión con MongoDB.
 
-- 📋 **GET /api/products**: Obtener productos con filtros, paginación y ordenamiento
-- 🔍 **GET /api/products/:id**: Obtener un producto específico por ID
-- ➕ **POST /api/products**: Agregar un nuevo producto
-- 🔄 **PUT /api/products/:id**: Actualizar un producto existente
-- ❌ **DELETE /api/products/:id**: Eliminar un producto
+- **Inicialización de Socket.IO**: Para comunicación en tiempo real.
 
-#### 🌈 Aspectos Destacados:
-- Implementa filtrado por categoría y disponibilidad
-- Soporta ordenamiento ascendente y descendente por precio
-- Utiliza paginación para manejar grandes conjuntos de datos
+- **Definición de Rutas**: Configura las rutas principales de la aplicación.
 
-### cartsRouter.js
+### customRouter.js
 
-Gestiona las operaciones del carrito de compras:
+_Ubicado en `src/utils/customRouter.util.js`_
 
-- 🛒 **POST /api/carts**: Crear un nuevo carrito
-- 📦 **GET /api/carts/:cid**: Listar productos en un carrito específico
-- ➕ **POST /api/carts/:cid/product/:pid**: Agregar un producto a un carrito
-- ❌ **DELETE /api/carts/:cid/products/:pid**: Eliminar un producto del carrito
-- 🔄 **PUT /api/carts/:cid**: Actualizar el carrito con un arreglo de productos
-- 🔢 **PUT /api/carts/:cid/products/:pid**: Actualizar la cantidad de un producto en el carrito
-- 🗑️ **DELETE /api/carts/:cid**: Eliminar todos los productos del carrito
+El `CustomRouter` facilita la creación de rutas en Express. Algunos puntos importantes:
 
-#### 🌈 Aspectos Destacados:
-- Utiliza referencias a productos en lugar de embeber los datos
-- Implementa operaciones CRUD completas para carritos
+- **Centraliza Errores**: Maneja errores de forma consistente.
+- **Respuestas Personalizadas**: Define respuestas estándar (`json200`, `json404`, etc.).
+- **Métodos CRUD**: Simplifica la definición de rutas para crear, leer, actualizar y eliminar.
 
-### viewsRouter.js
+#### ¿Cómo Funciona?
 
-Maneja las rutas para las vistas renderizadas:
+El `CustomRouter` utiliza varios métodos clave:
 
-- 🏠 **GET /**: Renderiza la vista principal con la lista de productos paginada
-- 🔄 **GET /realtimeproducts**: Renderiza la vista de productos en tiempo real
-- 🛒 **GET /carts/:cid**: Renderiza la vista de un carrito específico
+- **_applyCallbacks**: Transforma los callbacks en funciones asíncronas que manejan errores.
+    ```javascript
+    _applyCallbacks = (callbacks) =>
+        callbacks.map((cb) => async (req, res, next) => {
+            try {
+                await cb(req, res, next);
+            } catch (error) {
+                return next(error);
+            }
+        });
+    ```
 
-#### 🌈 Aspectos Destacados:
-- Utiliza Handlebars para renderizar las vistas
-- Implementa paginación en la vista de productos
-- Muestra detalles completos del carrito, incluyendo productos y total
+- **responses**: Añade métodos de respuesta personalizados al objeto `res`.
+    ```javascript
+    responses = (req, res, next) => {
+        res.json200 = (response, message) =>
+            res.status(200).json({ response, message });
+        res.json201 = (response, message) =>
+            res.status(201).json({ response, message });
+        res.json400 = (message) => res.status(400).json({ error: message });
+        return next();
+    };
+    ```
+
+- **create, read, update, destroy**: Métodos para definir rutas HTTP (`POST`, `GET`, `PUT`, `DELETE`).
+    ```javascript
+    create = (path, ...cbs) => {
+        this._router.post(
+            path,
+            this.responses,
+            this._applyCallbacks(cbs)
+        );
+    };
+    read = (path, ...cbs) => {
+        this._router.get(
+            path,
+            this.responses,
+            this._applyCallbacks(cbs)
+        );
+    };
+    ```
+
+#### Beneficios:
+- **Código Limpio**: Reduce repetición de código.
+- **Flexibilidad**: Fácil de adaptar y extender.
+- **Consistencia**: Respuestas uniformes en toda la API.
+
+
+
+## Mapeo de Rutas
+
+La aplicación está estructurada en dos ramas principales: **API** y **Views**, divididas en rutas específicas a través de los siguientes archivos:
+
+### 1. **Index Router** (`indexRouter.js`)
+- **Rutas Principales**:
+  - `/api`: Rutas de la API
+  - `/views`: Rutas de las vistas
+
+### 2. **API Router** (`apiRouter.js`)
+Maneja todas las rutas relacionadas con la API para operaciones CRUD sobre productos, carritos, usuarios y sesiones:
+
+#### 📦 **Productos** (`/api/products`):
+- **GET /**: Listar productos con filtros, paginación y ordenamiento.
+- **GET /:id**: Obtener un producto específico por ID.
+- **POST /**: Agregar un nuevo producto.
+- **PUT /:id**: Actualizar un producto existente.
+- **DELETE /:id**: Eliminar un producto.
+
+#### 🛒 **Carritos** (`/api/carts`):
+- **POST /**: Crear un nuevo carrito.
+- **GET /:cid**: Listar productos en un carrito específico.
+- **POST /:cid/products/:pid**: Agregar un producto a un carrito.
+- **DELETE /:cid/products/:pid**: Eliminar un producto del carrito.
+- **PUT /:cid**: Actualizar el carrito con un arreglo de productos.
+- **PUT /:cid/products/:pid**: Actualizar la cantidad de un producto en el carrito.
+- **DELETE /:cid**: Eliminar todos los productos del carrito.
+
+#### 👥 **Usuarios** (`/api/users`):
+- **POST /**: Crear un nuevo usuario.
+- **GET /**: Listar todos los usuarios.
+- **PUT /:id**: Actualizar un usuario.
+- **DELETE /:id**: Eliminar un usuario.
+
+#### 🔐 **Sesiones** (`/api/sessions`):
+- **POST /logout**: Cerrar sesión.
+- **GET /current**: Obtener datos la sesión actual mediante un token JWT.
+
+### 3. **Views Router** (`viewsRouter.js`)
+Gestiona las rutas para las vistas renderizadas que interactúan con el frontend:
+
+#### 🔄 **Productos en Tiempo Real** (`views/products`):
+- **GET /**: Renderiza la vista de productos .
+- **GET /realtimeproducts**: Renderiza la vista de productos en tiempo real.
+- **POST /realtime products**: Crear un nuevo producto en la vista de productos en tiempo real.
+
+#### 🛒 **Carritos** (`views/carts):
+- **GET /:cid`**: Renderiza la vista de un carrito específico.
+
+#### 🏠 **Home** (`views/home`):
+- **GET /**: Renderiza la vista principal.
+- **GET /register**: Renderiza la vista de registro.
+- **POST /register**: Registrar un nuevo usuario.
+- **GET /login**: Renderiza la vista de inicio de sesión.
+- **POST /login**: Iniciar sesión.
+- **GET /logout**: Cerrar sesión.
+- **GET /products**: Renderiza la vista de productos.
+- **GET /admin**: Renderiza la vista de administración.
 
 ---
 
-## Controladores
+## 🔐 Autenticación con Passport
 
-### productController.js
+### 📝 Registro de Usuarios
 
-Maneja la lógica de negocio para productos:
+Nuestro proceso de registro utiliza Passport con una estrategia local para crear nuevas cuentas de usuario de forma segura. Aquí está lo que sucede entre bastidores:
 
-- Obtener productos con filtros y paginación
-- Agregar, actualizar y eliminar productos
-- Obtener estadísticas de productos
+1. 📧 Verificamos si el email ya existe en nuestra base de datos.
+2. 🔒 Si el usuario es nuevo, utilizamos bcrypt para hashear la contraseña:
+   ```javascript
+   req.body.password = createHashUtil(password);
 
-### cartsController.js
+3. 👤 Creamos un nuevo usuario en la base de datos con la contraseña hasheada.
+4. 🎉 ¡Listo! El usuario está registrado y listo para iniciar sesión.
 
-Gestiona la lógica de carritos de compra:
 
-- Crear y obtener carritos
-- Agregar y eliminar productos del carrito
-- Actualizar cantidades de productos
-- Calcular totales del carrito
+### 🔑 Inicio de Sesión
 
-### categoryController.js
+El proceso de inicio de sesión también utiliza Passport con una estrategia local. Así es como funciona:
 
-Maneja operaciones relacionadas con categorías de productos:
+1. 🔍 Buscamos al usuario en la base de datos por su email.
+2. 🔐 Utilizamos bcrypt para verificar la contraseña:
 
-- Buscar categorías por nombre
+```javascript
+const verify = verifyHashUtil(passwordForm, passwordDb);
+```
 
----
 
-## Modelos
+3. 🎫 Si las credenciales son correctas, generamos un token JWT:
 
-- **productsModel.js**: Define el esquema para productos
-- **cartsModel.js**: Define el esquema para carritos, con referencia a productos
-- **categoriesModel.js**: Define el esquema para categorías de productos
+```javascript
+req.token = createTokenUtil(data);
+```
 
----
 
-## 🖥️ Vistas y Tiempo Real
+4. 💾 Guardamos el token en el objeto del usuario y lo devolvemos.
+5. 🟢 Actualizamos el estado del usuario a 'en línea'.
 
-### Handlebars Templates
 
-- **home.handlebars**: Muestra una lista paginada de productos
-- **realTimeProducts.handlebars**: Presenta un formulario para agregar productos y una lista actualizable en tiempo real
-- **cart.handlebars**: Muestra los detalles de un carrito específico, incluyendo:
-  - Lista de productos en el carrito con título, precio y cantidad
-  - Total del carrito
-  - Botones para vaciar el carrito y completar la compra
-  - Mensajes de carrito vacío y compra completada
+## 🛠️ Utilidades Importantes
 
-### Socket.IO Integration
+- **createHashUtil**: Crea un hash seguro de la contraseña para almacenarla.
+- **verifyHashUtil**: Compara una contraseña en texto plano con su versión hasheada.
+- **createTokenUtil**: Genera un token JWT con la información del usuario.
+- **verifyTokenUtil**: Verifica la validez de un token JWT.
 
-- Permite la actualización en tiempo real de la lista de productos
-- Facilita la actualización del carrito en tiempo real
 
-### Funcionalidades del Carrito
+## 🔒 Seguridad
 
-- Visualización detallada de los productos en el carrito
-- Cálculo automático del total del carrito
-- Opción para vaciar el carrito completamente
-- Proceso de completar la compra
-- Mensajes interactivos para carrito vacío y compra completada
-- Integración con el controlador de carritos para operaciones en tiempo real
+- Utilizamos bcrypt para el hashing de contraseñas, lo que proporciona una capa adicional de seguridad contra ataques de fuerza bruta.
+- Los tokens JWT nos permiten mantener sesiones sin estado, mejorando la escalabilidad de nuestra aplicación.
 
-### Estilos y Interactividad
 
-- Estilos CSS personalizados para la vista del carrito (cart.css)
-- Interactividad mediante JavaScript para manejar acciones del carrito
-- Mensajes dinámicos que se muestran/ocultan según las acciones del usuario
+¡Con estas medidas, mantenemos la información de nuestros usuarios segura y nuestra aplicación robusta! 🚀
 
-### Integración con Backend
 
-- Utiliza helpers de Handlebars para formatear precios y manejar lógica condicional
-- Interactúa con el backend a través de llamadas API para vaciar el carrito y completar la compra
-
----
 
 ## 🏃‍♂️ Cómo Ejecutar Mi Código
 
@@ -203,11 +233,8 @@ Maneja operaciones relacionadas con categorías de productos:
 3. Navega hasta el directorio del proyecto en tu terminal.
 4. Ejecuta `npm install` para instalar las dependencias.
 5. Configura las variables de entorno necesarias (como la URI de MongoDB) en un archivo `.env`.
-6. Inicia el servidor con `npm start` o `node src/app.js`.
+6. Inicia el servidor con `node --watch src/app.js` o `node src/app.js`.
 7. El servidor estará corriendo en `http://localhost:8080`.
-8. Accede a `http://localhost:8080/views` para ver la lista de productos paginada.
-9. Accede a `http://localhost:8080/views/realtimeproducts` para interactuar con la vista en tiempo real.
-10. Utiliza `http://localhost:8080/api/carts/:cartId` para ver los detalles de un carrito específico.
 
 > **Nota:** Asegúrate de tener instaladas las dependencias necesarias como `express`, `express-handlebars`, `socket.io`, y `mongoose`.
 
