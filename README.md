@@ -238,6 +238,7 @@ req.token = createTokenUtil(data);
 5. Configura las variables de entorno necesarias (como la URI de MongoDB) en un archivo `.env`.
 6. Inicia el servidor con `node --watch src/app.js` o `node src/app.js`.
 7. El servidor estará corriendo en `http://localhost:8080`.
+8. Ingresa la ruta: `http://localhost:8080/views/home/` y prueba el codigo
 
 > **Nota:** Asegúrate de tener instaladas las dependencias necesarias como `express`, `express-handlebars`, `socket.io`, y `mongoose`.
 
