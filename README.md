@@ -5,20 +5,20 @@
 ---
 
 ## 📚 Tabla de Contenidos
-- [Descripción del Proyecto](#descripción-del-proyecto)
-- [Componentes Principales](#componentes-principales)
+- [Descripción del Proyecto](#-descripción-del-proyecto)
+- [Componentes Principales](#-componentes-principales)
   - [app.js](#appjs)
-  - [customRouter.js](#customRouter.js)
-- [Mapeo de rutas](#Mapeo-de-Rutas)
-  - [indexRouter](#indexRouter.js)
-  - [apiRouter](#apiRouter.js)
-  - [viewsRouter](#viewsRouter.js)
-- [Autenticacion con Passport](#Autenticación-con-Passport)
-  - [Register](#Register)
-  - [Login](#Login)
-  - [Utilidades](#Utilidades-importantes)
-  - [Seguridad](#Seguridad)
-- [Cómo Ejecutar Mi Código](#cómo-ejecutar-mi-código)
+  - [customRouter.js](#customrouterjs)
+- [Mapeo de Rutas](#-mapeo-de-rutas)
+  - [indexRouter](#1-index-router-indexrouterjs)
+  - [apiRouter](#2-api-router-apirouterjs)
+  - [viewsRouter](#3-views-router-viewsrouterjs)
+- [Autenticación con Passport](#-autenticación-con-passport)
+  - [Register](#-register)
+  - [Login](#-login)
+  - [Utilidades Importantes](#-utilidades-importantes)
+  - [Seguridad](#-seguridad)
+- [Cómo Ejecutar Mi Código](#-cómo-ejecutar-mi-código)
 
 ---
 
