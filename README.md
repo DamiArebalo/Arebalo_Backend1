@@ -13,8 +13,11 @@
   - [indexRouter](#indexRouter.js)
   - [apiRouter](#apiRouter.js)
   - [viewsRouter](#viewsRouter.js)
-- [Modelos](#modelos)
-- [Vistas y Tiempo Real](#vistas-y-tiempo-real)
+- [Autenticacion del usuario](#Autenticación-con-Passport)
+  - [Register](#Register)
+  - [Login](#Login)
+  - [Utilidades](#Utilidades-importantes)
+  - [Seguridad](#Seguridad)
 - [Cómo Ejecutar Mi Código](#cómo-ejecutar-mi-código)
 
 ---
@@ -172,7 +175,7 @@ Gestiona las rutas para las vistas renderizadas que interactúan con el frontend
 
 ## 🔐 Autenticación con Passport
 
-### 📝 Registro de Usuarios
+### 📝 Register
 
 Nuestro proceso de registro utiliza Passport con una estrategia local para crear nuevas cuentas de usuario de forma segura. Aquí está lo que sucede entre bastidores:
 
@@ -185,7 +188,7 @@ Nuestro proceso de registro utiliza Passport con una estrategia local para crear
 4. 🎉 ¡Listo! El usuario está registrado y listo para iniciar sesión.
 
 
-### 🔑 Inicio de Sesión
+### 🔑 Login
 
 El proceso de inicio de sesión también utiliza Passport con una estrategia local. Así es como funciona:
 
@@ -208,7 +211,7 @@ req.token = createTokenUtil(data);
 5. 🟢 Actualizamos el estado del usuario a 'en línea'.
 
 
-## 🛠️ Utilidades Importantes
+### 🛠️ Utilidades Importantes
 
 - **createHashUtil**: Crea un hash seguro de la contraseña para almacenarla.
 - **verifyHashUtil**: Compara una contraseña en texto plano con su versión hasheada.
@@ -216,7 +219,7 @@ req.token = createTokenUtil(data);
 - **verifyTokenUtil**: Verifica la validez de un token JWT.
 
 
-## 🔒 Seguridad
+### 🔒 Seguridad
 
 - Utilizamos bcrypt para el hashing de contraseñas, lo que proporciona una capa adicional de seguridad contra ataques de fuerza bruta.
 - Los tokens JWT nos permiten mantener sesiones sin estado, mejorando la escalabilidad de nuestra aplicación.
