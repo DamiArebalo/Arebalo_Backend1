@@ -18,6 +18,7 @@
   - [Login](#-login)
   - [Utilidades Importantes](#-utilidades-importantes)
   - [Seguridad](#-seguridad)
+- [Alertas de Confirmación y Error](#-alertas-de-confirmación-y-error)
 - [Cómo Ejecutar Mi Código](#-cómo-ejecutar-mi-código)
 
 ---
@@ -227,6 +228,103 @@ req.token = createTokenUtil(data);
 
 ¡Con estas medidas, mantenemos la información de nuestros usuarios segura y nuestra aplicación robusta! 🚀
 
+---
+## ⚡ Alertas de Confirmación y Error
+
+### Uso de SWAL fire y Sockets
+
+Para manejar alertas de confirmación y error, utilizamos **SWAL fire** junto con **Sockets** para la emisión y escucha de eventos de cambios, tales como registro, inicio de sesión y agregar al carrito. Esto nos permite brindar una experiencia de usuario interactiva y en tiempo real.
+
+### Funciones Principales
+
+#### 1. Manejo de Conexiones de Socket (`handlerSockets.js`)
+
+Este archivo se encarga de gestionar las conexiones de WebSocket y los eventos relacionados. Por ejemplo, cuando se agrega un producto o se actualiza el carrito, emitimos eventos a todos los clientes conectados.
+
+- **Agregar Producto**: Escuchamos el evento `addProduct` y emitimos `productAdded` o `error` dependiendo del resultado.
+    ```javascript
+    socket.on('addProduct', async (productData) => {
+        const newProduct = await addOneProduct(productData);
+        if (newProduct) {
+            socket.emit('productAdded', newProduct);
+        } else {
+            socket.emit('error', { message: 'Error al agregar el producto' });
+        }
+    });
+    ```
+
+- **Agregar al Carrito**: Similar al anterior, pero para actualizar el carrito.
+    ```javascript
+    socket.on('addToCart', async (data) => {
+        const newCart = await addToCart(data);
+        if (newCart) {
+            socket.emit('cartUpdate', { message: 'Carrito actualizado', data: newCart });
+        } else {
+            socket.emit('errorCart', { message: 'Error al actualizar el carrito' });
+        }
+    });
+    ```
+
+#### 2. Función de Inicio de Sesión (`login` en `views/home/login`)
+
+Esta función maneja el proceso de inicio de sesión, emitiendo eventos en caso de éxito o error.
+
+- **Login**: Si el login es exitoso, emitimos el evento `loged`.
+    ```javascript
+    socketServer.emit('loged', { message: message });
+    ```
+
+- **Error de Login**: Si hay un error, emitimos `errorLogin`.
+    ```javascript
+    socketServer.emit('errorLogin', { err: err.message });
+    ```
+
+#### 3. Función de Registro (`register` en `views/home/register`)
+
+Similar a la función de inicio de sesión, esta función maneja el proceso de registro, emitiendo eventos en caso de éxito o error.
+
+- **Registro**: Emitimos `registered` si el registro es exitoso.
+    ```javascript
+    socketServer.emit('registered', { message: message });
+    ```
+
+- **Error de Registro**: Emitimos `errorRegister` en caso de error.
+    ```javascript
+    socketServer.emit('errorRegister', { err: err.message });
+    ```
+
+### Implementación en el Frontend
+
+Utilizamos SWAL fire para mostrar alertas basadas en los eventos emitidos por los sockets. Por ejemplo, en el archivo `register.js`:
+
+- **Escuchar Evento de Registro Exitoso**:
+    ```javascript
+    socket.on('registered', (data) => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Registro exitoso',
+            text: data.message.message,
+            timer: 3000
+        }).then(() => {
+            window.location.href = '/views/home/login';
+        });
+    });
+    ```
+
+- **Escuchar Evento de Error en Registro**:
+    ```javascript
+    socket.on('errorRegister', (data) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: JSON.stringify(data.err),
+            timer: 3000
+        });
+    });
+    ```
+
+De esta manera, garantizamos que los usuarios reciban retroalimentación inmediata y clara sobre sus acciones, mejorando la experiencia general de la aplicación.
+---
 
 
 ## 🏃‍♂️ Cómo Ejecutar Mi Código
