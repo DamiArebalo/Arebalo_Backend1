@@ -13,7 +13,7 @@
   - [indexRouter](#indexRouter.js)
   - [apiRouter](#apiRouter.js)
   - [viewsRouter](#viewsRouter.js)
-- [Autenticacion del usuario](#Autenticación-con-Passport)
+- [Autenticacion con Passport](#Autenticación-con-Passport)
   - [Register](#Register)
   - [Login](#Login)
   - [Utilidades](#Utilidades-importantes)
