@@ -16,7 +16,12 @@ class SessionApiRouter extends CustomRouter {
         this.read("/current", dataOnline)
     }
 }
+let sessionApiRouter = new SessionApiRouter();
+sessionApiRouter = sessionApiRouter.getRouter();
 
+export default sessionApiRouter
+
+//funcion para obtener datos del usuario en línea
 async function dataOnline(req, res) {
     const message = "User Online"
     
@@ -44,14 +49,8 @@ async function dataOnline(req, res) {
     return res.json401()
 }
 
-let sessionApiRouter = new SessionApiRouter();
-sessionApiRouter = sessionApiRouter.getRouter();
 
-export default sessionApiRouter
-
-
-
-
+//funcion para registrar un usuario
 async function register(req, res,) {
     //middlewares
     const response = req.user
@@ -59,6 +58,8 @@ async function register(req, res,) {
     return res.json201( response, message )
 
 }
+
+//funcion para iniciar sesión
 async function login(req, res) {
 
     const message = "User Loged IN"
@@ -68,7 +69,7 @@ async function login(req, res) {
     return res.json200({ response, message })
 
 }
-
+//funcion para verificar si el usuario está en línea
 async function online(req, res) {
 
     const message = "User Online"
@@ -80,6 +81,7 @@ async function online(req, res) {
     return res.json401()
 }
 
+//funcion para cerrar sesión
 async function logout(req, res) {
     session = req.session
     req.session.destroy();
@@ -87,6 +89,7 @@ async function logout(req, res) {
     return res.json200({ session, message })
 }
 
+//funcion para verificar si el token es válido
 async function onlineToken(req, res) {
 
     const message = "User Online"
@@ -105,3 +108,4 @@ async function onlineToken(req, res) {
     }
     
 }
+

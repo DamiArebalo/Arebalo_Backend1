@@ -1,17 +1,23 @@
+//recuperar elementos del formulario
 const $$registerForm = document.querySelector("#registerForm");
-const socket = io(); 
-console.log("socket: ", socket);
-
-console.log($$registerForm);
 const $$registerBtn = document.querySelector("#register");
+//conectar con el socket
+const socket = io(); 
+//puesto de control
+// console.log("socket: ", socket);
+// console.log($$registerForm);
+
+//evento de click en el botón de registro
 $$registerBtn.addEventListener("click", async (e) => {
      
-
+    //guardar datos del formulario
     const formData = new FormData($$registerForm);
     const data = Object.fromEntries(formData); // Convierte FormData a objeto
     const jsonData = JSON.stringify(data); // Convierte el objeto a JSON
-    console.log(jsonData);
+    //puesto de control
+    // console.log(jsonData);
 
+    //configurar opciones para el request
     const options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,13 +47,9 @@ $$registerBtn.addEventListener("click", async (e) => {
                 timer: 3000
             })
         });
-        console.log("antes del fetch");
+
+       //enviar petición al servidor con ruta y data
         const response = await fetch($$registerForm.action, options);
-        console.log("despues del fetch");
-
-
-        
-       
 
     } catch (error) {
         Swal.fire({

@@ -1,3 +1,4 @@
+// Middleware para manejar errores de ruta
 function pathHandler(req, res, next) {
     try {
         const message = `${req.method} ${req.url} ENPOINT NOT FOUND`;
@@ -10,11 +11,6 @@ function pathHandler(req, res, next) {
     } catch (error) {
         return next(error);
     }
-    
-
-    
-    
-
    
 }
 

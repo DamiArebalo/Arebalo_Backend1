@@ -30,7 +30,7 @@ passport.use(
                     return done(error); 
                 }else{
                     //puesto de control
-                    console.log("user no existe ✅");
+                    //console.log("user no existe ✅");
                 }
 
                 // Crear el hash de la contraseña y reemplazarlo en el objeto de solicitud
@@ -49,6 +49,7 @@ passport.use(
                 }
 
                 const data = req.body; // Obtener los datos del cuerpo de la solicitud
+                
                 //puesto de control
                // console.log("data del registro: ", data);
 

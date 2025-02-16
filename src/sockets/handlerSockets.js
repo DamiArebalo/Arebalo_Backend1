@@ -31,9 +31,11 @@ export const handleSocketConnection = (socket) => {
             });
         } else {
             // Emitir error si no se pudo actualizar el carrito
-            socket.emit('error', {
+            socket.emit('errorCart', {
                 message: 'Error al actualizar el carrito'
             });
         }
     });
+
+    
 };

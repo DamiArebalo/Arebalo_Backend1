@@ -48,8 +48,6 @@ async function listProducts(req, res) {
         route: "/views/products" 
     });
     console.log('Productos paginados y ordenados obtenidos correctamente');
-
-
 }
 
 async function createProduct(req, res) {
