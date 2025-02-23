@@ -12,9 +12,10 @@ const schema = new mongoose.Schema({
         quantity: { type: Number, default: 1 },
         _id: false
     }],
-    total: { type: Number, default: 0 },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: config.USERS_COLLECTION, required: true },
-    state: { type: String, enum: ['done', 'pending', 'canceled'], default: 'done' }
+    total: { type: Number, default: 0, index: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: config.USERS_COLLECTION, required: true, index: true },
+    state: { type: String, enum: ['done', 'pending', 'canceled'], default: 'done' , index: true },
+    date: { type: Date, default: Date.now, index: true }
 }, {
     toJSON: { virtuals: true }, // Habilita la inclusión de virtuals en la salida JSON
 });

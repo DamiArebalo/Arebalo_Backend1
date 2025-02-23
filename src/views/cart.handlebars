@@ -11,7 +11,7 @@
 <body>
   <div class="container">
     <h1>Your Cart</h1>
-    <div id="cart-content">
+    <div id="cart-content" data-cart-id="{{cartId}}">
       {{#if products.length}}
       <ul class="product-list">
         {{#each products}}
@@ -56,20 +56,25 @@
     import CartController from '../dao/cartsController.js';
     const cartController = new CartController();
 
-    document.addEventListener('DOMContentLoaded', () => {
-
-
-      
-
-      
-    }
-
-    if (completePurchaseButton) {
-      completePurchaseButton.addEventListener('click', () => {
-        handleCartAction('purchase', purchaseCompleteMessage);
+    socket.on('cartUpdate', (data) => {
+      Swal.fire({
+        title: '¡Éxito!',
+        text: data.message,
+        icon: 'success',
+        confirmButtonText: 'Ok'
       });
-    }
+    });
+  socket.on('confirmed', (data) => {
+      Swal.fire({
+        title: '¡Éxito!',
+        text: data.message,
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
   });
+
+    
+  
 
   </script>
 </body>
