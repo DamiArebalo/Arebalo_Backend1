@@ -1,104 +1,69 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-    <link rel="stylesheet" href="static/css/cart.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cart</title>
+  <link rel="stylesheet" href="static/css/cart.css">
 </head>
+
 <body>
-    <div class="container">
-        <h1>Your Cart</h1>
-        <div id="cart-content">
-            {{#if products.length}}
-                <ul class="product-list">
-                    {{#each products}}
-                        <li class="product-item">
-                            <div class="product-info">
-                                <span class="product-title">{{this.product.title}}</span>
-                                <span class="product-price">${{getPrice this.product}}</span>
-                            </div>
-                            <div class="product-quantity">
-                                Quantity: {{this.quantity}}
-                            </div>
-                        </li>
-                    {{/each}}
-                </ul>
-                <div class="cart-total">
-                    <strong>Total: ${{total}}</strong>
-                </div>
-                <div class="cart-actions">
-                    <button id="empty-cart" class="btn btn-danger">Empty Cart</button>
-                    <button id="complete-purchase" class="btn btn-success">Complete Purchase</button>
-                </div>
-            {{else}}
-                <p>Your cart is empty.</p>
-            {{/if}}
-        </div>
-        
-        <div id="empty-cart-message" class="message-container" style="display: none;">
-            <p>Empty cart 🙁</p>
-            <a href="/products" class="btn btn-primary">Continue Shopping</a>
-        </div>
-        
-        <div id="purchase-complete-message" class="message-container" style="display: none;">
-            <p>Thank you very much for your purchase 👌</p>
-            <a href="/products" class="btn btn-primary">Continue Shopping</a>
-        </div>
+  <div class="container">
+    <h1>Your Cart</h1>
+    <div id="cart-content">
+      {{#if products.length}}
+      <ul class="product-list">
+        {{#each products}}
+        <li class="product-item">
+          <div class="product-info">
+            <span class="product-title">{{this.product.title}}</span>
+            <span class="product-price">${{getPrice this.product}}</span>
+          </div>
+          <div class="product-quantity">
+            Quantity: {{this.quantity}}
+          </div>
+        </li>
+        {{/each}}
+      </ul>
+      <div class="cart-total">
+        <strong>Total: ${{total}}</strong>
+      </div>
+      <div class="cart-actions">
+        <button id="empty-cart" class="btn btn-danger">Empty Cart</button>
+        <button id="complete-purchase" class="btn btn-success">Complete Purchase</button>
+      </div>
+      {{else}}
+      <p>Your cart is empty.</p>
+      {{/if}}
     </div>
 
-    <script>
-        import { getPrice } from '../public/js/cart.js';
-        console.log('Handlebars template loaded');
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM fully loaded');
-        });
+    <div id="empty-cart-message" class="message-container" style="display: none;">
+      <p>Empty cart 🙁</p>
+      <a href="views/home/" class="btn btn-primary">Continue Shopping</a>
+    </div>
 
-        import CartController from '../dao/cartsController.js';
-        const cartController = new CartController();
+    <div id="purchase-complete-message" class="message-container" style="display: none;">
+      <p>Thank you very much for your purchase 👌</p>
+      <a href="views/home" class="btn btn-primary">Continue Shopping</a>
+    </div>
+  </div>
+  <script src="/static/js/cart.js"></script>
 
-        document.addEventListener('DOMContentLoaded', () => {
-    const cartContent = document.getElementById('cart-content');
-    const emptyCartMessage = document.getElementById('empty-cart-message');
-    const purchaseCompleteMessage = document.getElementById('purchase-complete-message');
-    const emptyCartButton = document.getElementById('empty-cart');
-    const completePurchaseButton = document.getElementById('complete-purchase');
+  <script>
+    import { getPrice } from '../public/js/cart.js';
+    console.log('Handlebars template loaded');
+    import CartController from '../dao/cartsController.js';
+    const cartController = new CartController();
+
+    document.addEventListener('DOMContentLoaded', () => {
 
 
-    function showMessage(messageElement) {
-      cartContent.style.display = 'none';
-      emptyCartMessage.style.display = 'none';
-      purchaseCompleteMessage.style.display = 'none';
-      messageElement.style.display = 'block';
+      
+
+      
     }
-  
-    async function handleCartAction(action, messageElement) {
-      try {
-        const response = await fetch(`/api/carts/${action}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (response.ok) {
-          showMessage(messageElement);
-        } else {
-          console.error('Error:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    }
-  
-    if (emptyCartButton) {
-      emptyCartButton.addEventListener('click', () => {
-        console.log("cartId: ",{{cartId}});
-        handleCartAction('empty', emptyCartMessage);
 
-      });
-    }
-  
     if (completePurchaseButton) {
       completePurchaseButton.addEventListener('click', () => {
         handleCartAction('purchase', purchaseCompleteMessage);
@@ -106,6 +71,7 @@
     }
   });
 
-    </script>
+  </script>
 </body>
+
 </html>

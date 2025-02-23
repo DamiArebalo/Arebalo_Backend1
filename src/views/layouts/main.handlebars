@@ -24,14 +24,14 @@
             
               {{#if isAdmin}}
                 <li class="nav-item">
-                  <a class="nav-link" href="/views/home/">Panel de Admin</a>
+                  <a class="nav-link" href="/views/home/admin">Panel de Admin</a>
                 </li>
               {{else}}
                 <li class="nav-item">
                   <a class="nav-link" href="/views/home">Inicio</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="/views/home/carts">Carrito</a>
+                  <a class="nav-link" href="/views/carts/{{user.cart}}">Carrito</a>
                 </li>
               {{/if}}
                 <li class="nav-item" id="logout">
