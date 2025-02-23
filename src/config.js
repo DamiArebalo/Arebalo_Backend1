@@ -9,7 +9,8 @@ const config = {
     PRODUCTS_COLLECTION: 'products',
     CATEGORIES_COLLECTION: 'categories',
     CARTS_COLLECTION: 'carts',
-    USERS_COLLECTION: 'users'
+    USERS_COLLECTION: 'users',
+    PURCHASE_HISTORY_COLLECTION: 'purchaseHistory',
 
 };
 
