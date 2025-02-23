@@ -1,80 +1,154 @@
 <div class="container">
-    <h1 class="text-center mb-4">Bienvenido a Mi Tienda</h1>
+    
 
     {{#if isAuthenticated}}
-    <p class="text-center">Hola, {{user.name}}!</p>
-    {{#if isAdmin}}
-    <p class="text-center">Tienes acceso al <a href="home/admin">panel de administración</a>.</p>
+
+        {{#if isAdmin}}
+            <h1 class="text-center mb-4">BIENVENIDO ADMINISTRADOR</h1>
+             <p class="text-center">Hola, {{user.name}}!</p>
+            <p class="text-center">Tienes acceso al <a href="home/admin">panel de administración</a>.</p>
+        {{else}}
+            <h1 class="text-center mb-4">Hola, {{user.name}}!</h1>
+             
+            <p class="text-center">Explora nuestros productos a continuación.</p>
+            <h2 class="text-center mt-5 mb-4">Lista de Productos</h2>
+
+            <ul class="product-list">
+                {{#each products.docs}}
+                <li class="product-item">
+                    <div class="product-info">
+                        <span class="product-code">Código: {{this.code}}</span>
+                        <span class="product-title">{{this.title}}</span>
+                        <span class="product-description">{{this.description}}</span>
+                        <span class="category-name">Categoría: {{this.category.name}}</span>
+                        <span class="product-stock">Stock: {{this.stock}}</span>
+                        <span class="product-price">${{this.priceList}}</span>
+                    </div>
+                    <div class="product-actions">
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus-btn" data-product-id="{{this.code}}">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" class="quantity-input" value="1" min="1" max="{{this.stock}}"
+                                data-product-id="{{this.code}}" readonly>
+                            <button class="quantity-btn plus-btn" data-product-id="{{this.code}}">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button class="add-to-cart-btn" data-product-id="{{this.code}}" data-stock="{{this.stock}}">
+                            <i class="fas fa-shopping-cart"></i>
+                            Agregar
+                        </button>
+                    </div>
+                </li>
+                {{/each}}
+            </ul>
+
+            <nav aria-label="Navegación de páginas" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {{#if products.hasPrevPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="{{route}}/?page={{products.prevPage}}&limit={{products.limit}}"
+                            aria-label="Anterior">
+                            <i class="fa fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {{else}}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fa fa-chevron-left"></i></span>
+                    </li>
+                    {{/if}}
+                    <li class="page-item disabled">
+                        <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
+                    </li>
+                    {{#if products.hasNextPage}}
+                    <li class="page-item">
+                        <a class="page-link" href="{{route}}/?page={{products.nextPage}}&limit={{products.limit}}"
+                            aria-label="Siguiente">
+                            <i class="fa fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {{else}}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="fa fa-chevron-right"></i></span>
+                    </li>
+                    {{/if}}
+                </ul>
+            </nav>
+        {{/if}}
     {{else}}
-    <p class="text-center">Explora nuestros productos a continuación.</p>
-    {{/if}}
+        <h1 class="text-center mb-4">Bienvenido a Mi Tienda</h1>
+        <p class="text-center">Explora nuestros productos a continuación.</p>
+        <h2 class="text-center mt-5 mb-4">Lista de Productos</h2>
 
-    {{/if}}
-
-    <h2 class="text-center mt-5 mb-4">Lista de Productos</h2>
-
-    <ul class="product-list">
-        {{#each products.docs}}
-        <li class="product-item">
-            <div class="product-info">
-                <span class="product-code">Código: {{this.code}}</span>
-                <span class="product-title">{{this.title}}</span>
-                <span class="product-description">{{this.description}}</span>
-                <span class="category-name">Categoría: {{this.category.name}}</span>
-                <span class="product-stock">Stock: {{this.stock}}</span>
-                <span class="product-price">${{this.priceList}}</span>
-            </div>
-            <div class="product-actions">
-                <div class="quantity-control">
-                    <button class="quantity-btn minus-btn" data-product-id="{{this.code}}">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                    <input type="number" class="quantity-input" value="1" min="1" max="{{this.stock}}"
-                        data-product-id="{{this.code}}" readonly>
-                    <button class="quantity-btn plus-btn" data-product-id="{{this.code}}">
-                        <i class="fas fa-plus"></i>
+        <ul class="product-list">
+            {{#each products.docs}}
+            <li class="product-item">
+                <div class="product-info">
+                    <span class="product-code">Código: {{this.code}}</span>
+                    <span class="product-title">{{this.title}}</span>
+                    <span class="product-description">{{this.description}}</span>
+                    <span class="category-name">Categoría: {{this.category.name}}</span>
+                    <span class="product-stock">Stock: {{this.stock}}</span>
+                    <span class="product-price">${{this.priceList}}</span>
+                </div>
+                <div class="product-actions">
+                    <div class="quantity-control">
+                        <button class="quantity-btn minus-btn" data-product-id="{{this.code}}">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" class="quantity-input" value="1" min="1" max="{{this.stock}}"
+                            data-product-id="{{this.code}}" readonly>
+                        <button class="quantity-btn plus-btn" data-product-id="{{this.code}}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <button class="add-to-cart-btn" data-product-id="{{this.code}}" data-stock="{{this.stock}}">
+                        <i class="fas fa-shopping-cart"></i>
+                        Agregar
                     </button>
                 </div>
-                <button class="add-to-cart-btn" data-product-id="{{this.code}}" data-stock="{{this.stock}}">
-                    <i class="fas fa-shopping-cart"></i>
-                    Agregar
-                </button>
-            </div>
-        </li>
-        {{/each}}
-    </ul>
-
-    <nav aria-label="Navegación de páginas" class="mt-4">
-        <ul class="pagination justify-content-center">
-            {{#if products.hasPrevPage}}
-            <li class="page-item">
-                <a class="page-link" href="{{route}}/?page={{products.prevPage}}&limit={{products.limit}}"
-                    aria-label="Anterior">
-                    <i class="fa fa-chevron-left"></i>
-                </a>
             </li>
-            {{else}}
-            <li class="page-item disabled">
-                <span class="page-link"><i class="fa fa-chevron-left"></i></span>
-            </li>
-            {{/if}}
-            <li class="page-item disabled">
-                <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
-            </li>
-            {{#if products.hasNextPage}}
-            <li class="page-item">
-                <a class="page-link" href="{{route}}/?page={{products.nextPage}}&limit={{products.limit}}"
-                    aria-label="Siguiente">
-                    <i class="fa fa-chevron-right"></i>
-                </a>
-            </li>
-            {{else}}
-            <li class="page-item disabled">
-                <span class="page-link"><i class="fa fa-chevron-right"></i></span>
-            </li>
-            {{/if}}
+            {{/each}}
         </ul>
-    </nav>
+
+        <nav aria-label="Navegación de páginas" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {{#if products.hasPrevPage}}
+                <li class="page-item">
+                    <a class="page-link" href="{{route}}/?page={{products.prevPage}}&limit={{products.limit}}"
+                        aria-label="Anterior">
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                </li>
+                {{else}}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa fa-chevron-left"></i></span>
+                </li>
+                {{/if}}
+                <li class="page-item disabled">
+                    <span class="page-link">Página {{products.page}} de {{products.totalPages}}</span>
+                </li>
+                {{#if products.hasNextPage}}
+                <li class="page-item">
+                    <a class="page-link" href="{{route}}/?page={{products.nextPage}}&limit={{products.limit}}"
+                        aria-label="Siguiente">
+                        <i class="fa fa-chevron-right"></i>
+                    </a>
+                </li>
+                {{else}}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="fa fa-chevron-right"></i></span>
+                </li>
+                {{/if}}
+            </ul>
+        </nav>
+    {{/if}}
+
+
+    
+
+    
 </div>
 
 {{!-- "manejo de botones en listado de productos" --}}
@@ -173,38 +247,3 @@
 </script>
 
 
-{{!-- try {
-
-
-const response = await fetch('/api/carts/', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-},
-body: JSON.stringify({ productId, quantity }),
-});
-
-
-if (response.ok) {
-Swal.fire({
-title: '¡Éxito!',
-text: 'Producto agregado al carrito',
-icon: 'success',
-confirmButtonText: 'Ok'
-});
-} else {
-throw new Error('Error al agregar al carrito');
-}
-} catch (error) {
-Swal.fire({
-title: 'Error',
-text: 'No se pudo agregar el producto al carrito',
-icon: 'error',
-confirmButtonText: 'Ok'
-});
-}
-});
-});
-
-
-}); --}}
