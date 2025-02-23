@@ -14,107 +14,65 @@ const userController = new UserController();
 // importar funciones de utilidad de token
 import { verifyTokenUtil } from '../../utils/token.util.js';
 
-// crear variables globales
-let sesionCart;
-
 //función para agregar un producto al carrito
-const addToCart = async (data) => {
-
-    //puesto de control
-    //console.log("data inicial: ",data);
-
-    //crear carrito si no existe
-    const cart = await cartController.get({ _id: sesionCart });
+const createCart = async (data, user) => {
 
     //recuperar producto por su código
-    const productId = await productController.getByCode(data.productId);
-    
-    //actualizar datos del producto
-    data.productId = productId;
-    
-    //puesto de control
-    // console.log("data actualizada 1: ", data);
-    // console.log("cart incial: ", cart);
-    
-    //si el carrito no existe, crear un nuevo
-    if(cart==null){
-        
-        const newCart = await cartController.add({products: [{product : data.productId, quantity: data.quantity}]});
+    const product = await getProductByCode(data.productId);
+    //guardar idProducto en data
+    data.productId = product._id;
 
-        //puesto de control
-        // console.log("newCart: ", newCart);
+    //actualizar data del producto con el id del usuario
+    data.user = user._id;
+    console.log("data: ", data);
 
-        //actualizar id del carrito
-        data.cartId = newCart._id;
+    const newCart = await cartController.add(data); // Intentar crear carrito
+    console.log("newCart: ", newCart);
 
-        //puesto de control
-       // console.log("data actualizada 2: ", data);
+    if (newCart) {
+        //actualizar user.cart
+        const updatedUser = await userController.update(user._id, { cart: newCart._id });
+        console.log("updatedUser: ", updatedUser);
 
-       //actualizar sessionCart
-        sesionCart = data.cartId;
+        //agregar producto al carrito
+        const addToCart = await cartController.addProduct(newCart._id, data.productId, data.quantity);
+        console.log("addToCart: ", addToCart);
 
-        //puesto de control
-        // console.log("sesionCart: ", sesionCart);
+        return addToCart;
 
-        return newCart;
-    
-        
     }else{
-        //console.log("verifico array",cart.products);
-        //verificar si el producto ya existe en el carrito
-        const exists = cart.products.some(item => item.product._id.equals(data.productId));
-
-        //puesto de control
-        //console.log("exists: ", exists);
-
-        //si el producto ya existe en el carrito, actualizar la cantidad
-        if (exists) {
-            
-            const updatedProduct = await cartController.sumProductQuantity(sesionCart, data.productId, data.quantity);
-
-            //puesto de control
-            //console.log("Producto actualizado: ", updatedProduct);
-
-            return updatedProduct;
-
-        }else{ //si el producto no existe en el carrito, agregarlo
-
-            const updatedCart = await cartController.addProduct(sesionCart, data.productId, data.quantity);
-
-            //puesto de control
-            //console.log("cart actualizada: ", updatedCart);
-
-            return updatedCart;
-        }
-            
-    }
-
-    
-
-
+        return null;
+    }    
 
 };
 
 // funcion para agregar un nuevo producto
-const addOneProduct = async (productData) => {
+const updatedCart = async (user, data) => {
 
-    // recuperar info de categoria
-    const category = await categoryController.findByName(productData.category);
+    //recuperar producto por su código
+    const product = await getProductByCode(data.productId);
+    //guardar idProducto en data
+    data.productId = product._id;
 
-    //puesto de control
-    //console.log("category: ", category);
+    //si existe producto en el carrito actualizar la cantidad
+    const productExits = await cartController.findProductExist(user.cart, data.productId);
 
-    // agregar info de categoria al producto
-    productData.category = category._id;
+    console.log("productExits: ", productExits);
+    if (productExits) {
+        //actualizar cantidad
+        const updatedCart = await cartController.updateProductQuantity(user.cart, data.productId, data.quantity);
+        
+        console.log("updateCart: ", updatedCart);
 
-    //puesto de control
-    //console.log("productData: ", productData);
+       return { message: 'Carrito actualizado', data: updatedCart };
+    }else{
+        //agregar producto al carrito
+        const addToCart = await cartController.addProduct(user.cart, data.productId, data.quantity);
+        console.log("addToCart: ", addToCart);
+        
+        return { message: 'Producto Agregado al carrito', data: addToCart };
+    }
 
-    // agregar producto
-    const newProduct = await productController.add(productData)
-    //puesto de control
-    //console.log("newProduct: ", newProduct);
-    return newProduct;
 };
 
 
@@ -129,7 +87,26 @@ const getUser = async (req) => {
     
 }
 
+const getUserByToken = async (token) => {
+    const verifydata = verifyTokenUtil(token);
+    //console.log("verifydata: ", verifydata);
+
+    const userID = await verifydata._id;
+    //console.log("userID: ", userID);
+
+    const user = await userController.readById(userID);
+    //console.log("user: ", user);
+
+    return user;
+}
+
+const getProductByCode = async (code) => {
+    const product = await productController.getByCode(code);
+    //console.log("product: ", product);
+
+    return product;
+}
 
 
 
-export {  addToCart, addOneProduct, getUser};
+export { createCart,updatedCart, getUser, getUserByToken};

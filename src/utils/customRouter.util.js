@@ -4,7 +4,7 @@ class CustomRouter {
     constructor() {
         this._router = Router();
     }
-
+    
     getRouter = () => this._router;
 
     _applyCallbacks = (callbacks) =>
@@ -25,6 +25,7 @@ class CustomRouter {
         res.json401 = () => res.status(401).json({ error: "Bad Auth!" });
         res.json403 = () => res.status(403).json({ error: "Forbidden!" });
         res.json404 = () => res.status(404).json({ error: "Not found!" });
+        res.json500 = (message) => res.status(500).json({ error: message });
         return next();
     };
     create = (path, ...cbs) =>{

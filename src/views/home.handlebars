@@ -154,6 +154,19 @@
             });
         });
 
+        socket.on('login', (data) => {
+            Swal.fire({
+                title: 'Error',
+                text: data.message,
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/views/home/login';
+                }
+            });
+        });
+
 
     });
 

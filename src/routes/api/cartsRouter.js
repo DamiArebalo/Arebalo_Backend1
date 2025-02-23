@@ -144,14 +144,32 @@ async function updateProductQuantity(req, res) {
     res.json200({ response: updatedCart, message: "Product quantity updated" });
 }
 
-// Función para eliminar todos los productos del carrito
+// Función para eliminar definitivamente el carrito
 async function destroyCart(req, res) {
     const cartId = req.params.cid;
-    const updatedCart = await cartController.removeAllProducts(cartId);
-    if (!updatedCart) {
-        res.json404();       
+    
+    // Recupera el carrito antes de eliminar los productos
+    const cart = await cartController.get( { _id: cartId });
+    if (!cart) {
+        return res.json404();
     }
-    res.json200({ response: updatedCart, message: "Cart deleted" });
+
+
+    // Actualiza el carrito del usuario
+    const userId = cart.user; // Asumiendo que cart.user contiene el id del usuario
+    const userUpdateResult = await userController.update(userId, { cart: null });
+    if (!userUpdateResult) {
+        return res.json500({ message: "Failed to update user cart" });
+    }
+    console.log("userUpdateResult: ", userUpdateResult.cart);
+
+    // Elimina definitivamente el carrito de la base de datos
+    const deleteResult = await cartController.delete({ _id: cartId });
+    if (!deleteResult) {
+        return res.json500({ message: "Failed to delete cart" });
+    }
+
+    res.json200({ response: deleteResult, message: "Cart deleted permanently" });
 }
 
 // Función para actualizar o agregar un producto en el carrito
