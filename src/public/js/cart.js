@@ -51,12 +51,44 @@ async function handleCartAction(action, messageElement) {
 
 // Eventos para manejar acciones en el carrito
 //vaciar carrito
-emptyCartButton.addEventListener('click', () => {
+emptyCartButton.addEventListener('click', async () => {
+
+  const response = await Swal.fire({
+    title: '¿Estás seguro de que deseas vaciar el carrito?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, vaciar carrito',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+
+  }).then(result => {
+    //si el usuario confirma la acción, ejecutar la función thenLogout
+    if (result.isConfirmed) {
+      handleCartAction('empty', emptyCartMessage);
+    }
+  });
    
-    handleCartAction('empty', emptyCartMessage);
+    
 });
 
 //completar compra
-completePurchaseButton.addEventListener('click', () => {
-    handleCartAction('purchase', purchaseCompleteMessage);
+completePurchaseButton.addEventListener('click', async () => {
+
+  const response = await Swal.fire({
+      title: '¿Estás seguro de que deseas completar la compra?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, completar compra',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+
+  }).then(result => {
+      //si el usuario confirma la acción, ejecutar la función thenLogout
+      if (result.isConfirmed) {
+          handleCartAction('purchase', purchaseCompleteMessage);
+      }
+  });
+    
 });

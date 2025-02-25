@@ -81,7 +81,7 @@ app.use(errorHandler); // Usar el middleware para manejar errores
 // Función que se ejecuta cuando el servidor está listo
 const ready = () => {
     console.log(`Server activo en puerto ${config.PORT}`); // Mensaje en consola
-    dbConnect(); // Conectar a la base de datos
+    dbConnect.getInstance(); // Conectar a la base de datos
 }
 
 // Iniciar el servidor HTTP

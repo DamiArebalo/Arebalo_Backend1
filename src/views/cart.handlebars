@@ -34,43 +34,62 @@
         <button id="complete-purchase" class="btn btn-success">Complete Purchase</button>
       </div>
       {{else}}
-      <p>Your cart is empty.</p>
+        <div id="empty-cart-message" class="message-container" style="display: block;">
+          <p>Empty cart 🙁</p>
+          <a href="../home/" class="btn btn-primary">Continue Shopping</a>
+        </div>
       {{/if}}
     </div>
 
     <div id="empty-cart-message" class="message-container" style="display: none;">
       <p>Empty cart 🙁</p>
-      <a href="views/home/" class="btn btn-primary">Continue Shopping</a>
+      <a href="../home/" class="btn btn-primary">Continue Shopping</a>
     </div>
 
     <div id="purchase-complete-message" class="message-container" style="display: none;">
       <p>Thank you very much for your purchase 👌</p>
-      <a href="views/home" class="btn btn-primary">Continue Shopping</a>
+      <a href="../home" class="btn btn-primary">Continue Shopping</a>
     </div>
   </div>
   <script src="/static/js/cart.js"></script>
 
   <script>
-    import { getPrice } from '../public/js/cart.js';
-    console.log('Handlebars template loaded');
-    import CartController from '../dao/cartsController.js';
-    const cartController = new CartController();
+    const socket = io();
+    import { actionEmptyCart } from '/static/js/utils.js';
 
     socket.on('cartUpdate', (data) => {
       Swal.fire({
-        title: '¡Éxito!',
-        text: data.message,
-        icon: 'success',
-        confirmButtonText: 'Ok'
+        title: '¿Estás seguro de que desea vaciar carrito?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, vaciar carrito',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+
+      }).then(result => {
+        //si el usuario confirma la acción, ejecutar la función actionEmptyCart
+        if (result.isConfirmed) {
+          actionEmptyCart(data.data);
+        }
       });
     });
   socket.on('confirmed', (data) => {
-      Swal.fire({
-        title: '¡Éxito!',
-        text: data.message,
-        icon: 'success',
-        confirmButtonText: 'Ok'
-      });
+    Swal.fire({
+        title: '¿Estás seguro de que desea terminar la compra?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, confirmar compra',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+
+    }).then(result => {
+        //si el usuario confirma la acción, redirigir al inicio
+        if (result.isConfirmed) {
+            window.location.href = '/views/home';
+        }
+    });
   });
 
     

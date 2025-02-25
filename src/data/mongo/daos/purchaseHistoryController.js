@@ -1,10 +1,12 @@
+import MongoDao from './mongoDao.js';
 import PurchaseHistoryModel from '../models/purchaseHistoryModel.js';
 
-class PurchaseHistoryController {
-    constructor() {}
+class PurchaseHistoryMongoDao extends MongoDao {
+    constructor() {
+        super(PurchaseHistoryModel);
+    }
 
-    // Método para crear un nuevo documento en el historial de compras
-    create = async (data) => {
+    async create(data) {
         try {
             const purchase = new PurchaseHistoryModel(data);
             await purchase.save();
@@ -12,67 +14,61 @@ class PurchaseHistoryController {
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 
-    // Método para obtener todos los documentos de un usuario específico
-    getByUser = async (userId) => {
+    async getByUser(userId) {
         try {
             const purchases = await PurchaseHistoryModel.find({ user: userId });
             return purchases;
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 
-    // Método para obtener todos los documentos con un estado específico
-    getByState = async (state) => {
+    async getByState(state) {
         try {
             const purchases = await PurchaseHistoryModel.find({ state: state });
             return purchases;
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 
-    // Método para obtener todos los documentos en una fecha específica
-    getByDate = async (date) => {
+    async getByDate(date) {
         try {
             const purchases = await PurchaseHistoryModel.find({ date: date });
             return purchases;
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 
-    // Método para obtener un documento por su ID
-    getById = async (id) => {
+    async getById(id) {
         try {
             const purchase = await PurchaseHistoryModel.findById(id);
             return purchase;
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 
-    // Método para eliminar todos los documentos de un usuario específico
-    deleteByUser = async (userId) => {
+    async deleteByUser(userId) {
         try {
             const result = await PurchaseHistoryModel.deleteMany({ user: userId });
             return result;
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 
-    // Método para eliminar un documento por su ID
-    deleteById = async (id) => {
+    async deleteById(id) {
         try {
             const result = await PurchaseHistoryModel.findByIdAndDelete(id);
             return result;
         } catch (err) {
             throw new Error(err.message);
         }
-    };
+    }
 }
 
-export default PurchaseHistoryController;
+export default PurchaseHistoryMongoDao;

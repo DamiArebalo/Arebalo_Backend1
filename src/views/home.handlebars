@@ -216,6 +216,10 @@
                 text: data.message,
                 icon: 'success',
                 confirmButtonText: 'Ok'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/views/home';
+                }
             });
         });
 
@@ -227,6 +231,7 @@
                 confirmButtonText: 'Ok'
             });
         });
+        
 
         socket.on('login', (data) => {
             Swal.fire({

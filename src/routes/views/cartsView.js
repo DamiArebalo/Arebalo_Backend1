@@ -24,6 +24,7 @@ class CartsViewRouter extends customRouter {
         this.read('/:cid', readCart)
         this.update('/:cid/empty', emptyCart)
         this.destroy('/:cid/purchase',validatePurchase, purchaseCart)
+        this.read('/', readCartEmpty)
     }
 }
 
@@ -66,32 +67,22 @@ async function readCart(req, res) {
 async function emptyCart(req, res) {
     //recupero el id del carrito
     const cartId = req.params.cid;
-    //console.log("cartId: ", cartId);
-
-    //vacio el carrito
+    //console.log("cartId: ", cartId);    
+    
     const updatedCart = await cartController.removeAllProducts({ _id: cartId });
     if (!updatedCart) {
         res.json404();
     }
 
-    //emito señal de vacio del carrito
-    socketServer.emit('cartUpdate', {
-        message: 'Carrito vaciado',
-        data: updatedCart 
-    });
-
-    
     res.json200({ response: updatedCart, message: "Carrito vaciado" });
 }
+
+
 
 async function validatePurchase(req, res, next) {
     console.log("logica de validacion de compra");
     //solo console log por ahora
-    //emit señal de "confirmed
-    socketServer.emit('confirmed', {
-        message: 'Seguro que desea realizar la compra?',
-        data: null 
-    });
+    
     next();
 }
 
@@ -137,6 +128,15 @@ async function purchaseCart(req, res) {
     res.json200({ response: updatedCart, message: "Carrito vaciado y eliminado" });
 }
 
+async function readCartEmpty(req, res) {
+    const isAuthenticated = true;
+    res.render('cart', {
+        products : [],
+        total : 0, 
+        cartId : null,
+        isAuthenticated: isAuthenticated,
+    });
+}
 
 
 
