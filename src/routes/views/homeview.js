@@ -1,15 +1,13 @@
 // homeView.js
 import CustomRouter from '../../utils/customRouter.util.js';
 import passport from '../../middlewares/passport.mid.js';
-import UserController from '../../data/mongo/controllers/userController.js';
-import ProductController from '../../data/mongo/controllers/productController.js';
+import userController from '../../controllers/userController.js';
+import productController from '../../controllers/productController.js';
 import config from '../../config.js';
 import { verifyTokenUtil } from '../../utils/token.util.js';
 import cookieParser from 'cookie-parser';
 import { socketServer } from '../../app.js';
 
-const userController = new UserController();
-const productController = new ProductController();
 
 class HomeViewRouter extends CustomRouter {
     constructor() {
@@ -208,7 +206,8 @@ async function getAdmin(req, res) {
 async function tokenToUser(token) {
     try {
         const verifydata = verifyTokenUtil(token);
-        const user = await userController.readById(verifydata._id);
+        console.log("verifydata: ", verifydata._id);
+        const user = await userController.getById(verifydata._id);
 
         if (user) {
             return user;

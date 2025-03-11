@@ -2,9 +2,9 @@ import CustomRouter from "../../utils/customRouter.util.js";
 
 import session from "express-session";
 import passportLocal from "../../middlewares/passport.mid.js";
-import UserController from "../../data/mongo/controllers/userController.js";
+import userController from "../../controllers/userController.js";
 import { createTokenUtil, finishTokenUtil, verifyTokenUtil } from "../../utils/token.util.js";
-const userController = new UserController()
+
 
 class SessionApiRouter extends CustomRouter {
     constructor() {
@@ -32,7 +32,7 @@ async function dataOnline(req, res) {
     const verifydata = verifyTokenUtil(token);
     console.log(verifydata);
 
-    const user = await userController.readById(verifydata._id)
+    const user = await userController.getById(verifydata._id)
 
     const dataUser = {
         _id: user._id,
@@ -97,7 +97,7 @@ async function onlineToken(req, res) {
     const verifydata = verifyTokenUtil(req.token)
     console.log(verifydata);
 
-    const user = await userController.readById(verifydata._id)
+    const user = await userController.getById(verifydata._id)
     console.log(user.role);
     
     if(user){

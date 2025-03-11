@@ -6,15 +6,15 @@ class CartMongoDao extends MongoDao {
         super(CartModel);
     }
 
-    async get(filter = {}) {
+    async getById(id) {
         try {
-            return await CartModel.findOne(filter).populate('products.product');
+            return await CartModel.findOne(id).populate('products.product');
         } catch (err) {
             throw new Error(err.message);
         }
     }
 
-    async add(data) {
+    async create(data) {
         try {
             return await CartModel.create(data);
         } catch (err) {

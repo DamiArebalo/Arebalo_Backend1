@@ -1,15 +1,15 @@
 import { createHashUtil, verifyHashUtil } from "../utils/hash.util.js";
-import Services from "./servicesManager.js";
-import persistance from "../data/factory.js";
-const { userDao } = persistance;
+import {Services} from "./servicesManager.js";
+import daos  from "../data/factory.js";
 
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-import { cartService } from "./cartService.js";
+import  cartService  from "./cartService.js";
 
 class UserService extends Services {
   constructor() {
-    super(userDao);
+    super(daos.daos.userDao);
+    console.log("dao users", daos.daos.userDao);
   }
 
   generateToken = (user) => {
@@ -26,9 +26,9 @@ class UserService extends Services {
     return jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "20m" });
   };
 
-  getUserByEmail = async (email) => {
+  readByEmail = async (email) => {
     try {
-      return await this.dao.getByEmail(email);
+      return await this.dao.readByEmail(email);
     } catch (error) {
       throw new Error(error);
     }

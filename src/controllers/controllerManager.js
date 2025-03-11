@@ -3,49 +3,48 @@ export default class Controllers {
       this.service = service;
     }
   
-    async getAll(req, res, next) {
+    async getAll(req, res) {
       try {
         const response = await this.service.getAll();
         res.json(response);
       } catch (error) {
-        next(error);
+        throw error;
+        
       }
     }
   
-    async getById(req, res, next) {
+    async getById(id) {
       try {
-        const { id } = req.params;
         const response = await this.service.getById(id);
-        res.json(response);
+        return response;
       } catch (error) {
-        next(error);
+        throw error;
       }
     }
-    async create(req, res, next){
+    async create(data){
       try {
-        const response = await this.service.create(req.body);
-        res.json(response);
+        const response = await this.service.create(data);
+        return response;
       } catch (error) {
-        next(error);
+        throw error;
       }
     }
   
-    async update(req, res, next) {
+    async update(id, data) {
       try {
-        const { id } = req.params;
-        const response = await this.service.update(id, req.body);
-        res.json(response);
+        
+        const response = await this.service.update(id, data);
+        return response;  
       } catch (error) {
-        next(error);
+       throw error;
       }
     }
-    async delete(req, res, next) {
+    async delete(id) {
       try {
-        const { id } = req.params;
         const response = await this.service.delete(id);
-        res.json(response);
+        return response;
       } catch (error) {
-        next(error);
+        throw error;
       }
     }
   }

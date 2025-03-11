@@ -1,19 +1,17 @@
 import customRouter from "../../utils/customRouter.util.js";
 
-import CartController from '../../data/mongo/controllers/cartsController.js';
+import cartController from '../../controllers/cartController.js';
 
-import PurchaseHistoryController from '../../data/mongo/controllers/purchaseHistoryController.js';
+import historyController from '../../controllers/purchasHistoryController.js';
 
-import UserController from "../../data/mongo/controllers/userController.js";
+import userController from "../../controllers/userController.js";
 
 import { socketServer } from '../../app.js';
 
 import { getUserByToken } from "../../public/js/utils.js";
-import e from "express";
 
-const histoyController = new PurchaseHistoryController();
-const cartController = new CartController();
-const userController = new UserController();
+
+
 
 class CartsViewRouter extends customRouter {
     constructor() {
@@ -38,7 +36,7 @@ async function readCart(req, res) {
     //console.log("cartId: ", cartId);
     const isAuthenticated = true;
 
-    const cart = await cartController.get({ _id: cartId });
+    const cart = await cartController.getById({ _id: cartId });
     console.log("cart: ", cart); 
 
     const token = req.cookies.authToken;
@@ -92,10 +90,12 @@ async function purchaseCart(req, res) {
     //console.log("cartId: ", cartId);
 
     //recupero el carrito
-    const cart = await cartController.get({ _id: cartId });
+    const cart = await cartController.getById({ _id: cartId });
     if (!cart) {
         return res.json404();
     }
+
+    console.log("cart: ", cart);
 
     // Actualiza el carrito del usuario
     const userId = cart.user; // Asumiendo que cart.user contiene el id del usuario
@@ -114,7 +114,7 @@ async function purchaseCart(req, res) {
     };
 
     //ingreso del historial de compras
-    const historyCreated = await histoyController.create(dataHistory);
+    const historyCreated = await historyController.create(dataHistory);
     if (!historyCreated) {
         return res.json500({ message: "Failed to create purchase history" });
     }

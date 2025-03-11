@@ -17,7 +17,8 @@ class UserMongoDao extends MongoDao {
 
     async readByEmail(email) {
         try {
-            const one = await User.findOne({ email }).lean();
+            console.log("email dao: ",email)
+            const one = await User.findOne({ email: email }).lean();
             return one;
         } catch (error) {
             throw new Error(error.message);

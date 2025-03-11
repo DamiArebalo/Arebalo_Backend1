@@ -1,8 +1,8 @@
 import CustomRouter from "../../utils/customRouter.util.js";
-import ProductController from "../../data/mongo/controllers/productController.js";
+import productController from "../../controllers/productController.js";
 import { indexExists, midVal, midExists } from '../../utils/validateProducts.js';
 import transformPaginationResult from '../../utils/transformPaginated.js';
-import CategoryController from "../../data/mongo/controllers/categoryController.js";
+import categoryController from "../../controllers/categoryController.js";
 
 // Define el enrutador para las operaciones de productos
 class ProductsApiRouter extends CustomRouter {
@@ -21,9 +21,7 @@ class ProductsApiRouter extends CustomRouter {
     }
 }
 
-// Crear instancias de los controladores
-const productController = new ProductController();
-const categoryController = new CategoryController();
+
 
 // GET --> Listado de productos generales con un límite incluido
 async function listProducts(req, res, next) {

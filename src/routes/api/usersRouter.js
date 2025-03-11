@@ -1,5 +1,5 @@
 import CustomRouter from "../../utils/customRouter.util.js";
-import UserController from "../../data/mongo/controllers/userController.js";
+import userController from "../../controllers/userController.js";
 
 // Define el enrutador para las operaciones de usuarios
 class UsersApiRouter extends CustomRouter {
@@ -21,7 +21,7 @@ usersApiRouter = usersApiRouter.getRouter();
 
 export default usersApiRouter;
 
-const userController = new UserController();
+
 
 // Función para crear un nuevo usuario
 async function createUser(req, res) {
@@ -31,10 +31,11 @@ async function createUser(req, res) {
     return res.status(201).json({ response, message });
 }
 
+
 // Función para leer todos los usuarios
 async function readUsers(req, res) {
     const message = "USERS FOUND";
-    const response = await userController.read();
+    const response = await userController.getAll();
     return res.status(200).json({ response, message });
 }
 

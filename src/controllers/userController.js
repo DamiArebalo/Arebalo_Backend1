@@ -5,28 +5,17 @@ class UserController extends Controllers {
   constructor(){
     super(userService)
   }
-
-  register = async (req, res, next) => {
+  readByEmail = async (email) => {
     try {
-      const user = await this.service.register(req.body);
-      res.json(user);
+      const user = await this.service.readByEmail(email);
+      return user;
     } catch (error) {
-      next(error);
+      throw error;
     }
   };
   
-  login = async (req, res, next) => {
-    try {
-      const token = await this.service.login(req.body);
-      res
-        .cookie('token', token, { httpOnly: true })
-        .json({ message: 'Login OK', token });
-    } catch (error) {
-      next(error);
-    }
-  };
   
-  privateData = (req, res, next) => {
+  privateData = (req, res) => {
     try {
       //se podria guardar el id en el generateToken
       //y en este controller llamar al this.service.getById()
@@ -36,9 +25,12 @@ class UserController extends Controllers {
         user: req.user,
       });
     } catch (error) {
-      next(error);
+      throw error;
     }
   };
 }
 
-export const userController = new UserController();
+
+const userController = new UserController();
+
+export  default userController;

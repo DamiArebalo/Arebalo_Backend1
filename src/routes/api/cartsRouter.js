@@ -1,10 +1,10 @@
 import CustomRouter from "../../utils/customRouter.util.js";
-import CartController from "../../data/mongo/controllers/cartsController.js";
-import ProductController from "../../data/mongo/controllers/productController.js";
+import cartController from "../../controllers/cartController.js";
+import productController from "../../controllers/productController.js";
 import { verifyTokenUtil } from "../../utils/token.util.js";
-import UserController from "../../data/mongo/controllers/userController.js";
+import userController from "../../controllers/userController.js";
 
-const userController = new UserController();
+
 
 // Define el enrutador para las operaciones del carrito de compras
 class CartsRouter extends CustomRouter {
@@ -24,10 +24,10 @@ class CartsRouter extends CustomRouter {
     }
 }
 
-const cartController = new CartController();
-const productController = new ProductController();
+
 
 let cartsRouter = new CartsRouter();
+
 cartsRouter = cartsRouter.getRouter();
 
 export default cartsRouter;
@@ -35,7 +35,7 @@ export default cartsRouter;
 // Función para leer un carrito específico por su ID
 async function readCart(req, res) {
     const cartId = req.params.cid;
-    const response = await cartController.get({ _id: cartId });
+    const response = await cartController.getById({ _id: cartId });
     const message = "CART FOUND";
     if (!response) {
         res.json404();
@@ -47,7 +47,7 @@ async function readCart(req, res) {
 async function readCartsFromUser(req, res) {
     const { user_id } = req.params;
     const message = "CARTS FOUND";
-    const response = await cartController.get({ user_id });
+    const response = await cartController.getById({ user_id });
     return res.json200({ response, message });
 }
 
@@ -60,7 +60,7 @@ async function createCart(req, res, next) {
             const tokenData = verifyTokenUtil(token); 
 
             // Recuperar usuario
-            const user = await userController.readById(tokenData._id);
+            const user = await userController.getById(tokenData._id);
 
             // Si no existe el usuario, redirigir al login
             if (!user) {
@@ -149,7 +149,7 @@ async function destroyCart(req, res) {
     const cartId = req.params.cid;
     
     // Recupera el carrito antes de eliminar los productos
-    const cart = await cartController.get( { _id: cartId });
+    const cart = await cartController.getById( { _id: cartId });
     if (!cart) {
         return res.json404();
     }

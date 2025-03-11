@@ -1,10 +1,10 @@
 import passport from "passport"; 
 import { Strategy as LocalStrategy } from "passport-local"; 
-import UserController from "../data/mongo/controllers/userController.js"; 
+import userController from "../controllers/userController.js";
 import { createHashUtil, verifyHashUtil } from "../utils/hash.util.js"; 
 import { createTokenUtil, finishTokenUtil, verifyTokenUtil } from "../utils/token.util.js"; 
 
-const userController = new UserController(); // Instanciar el controlador de usuario
+
 
 // Configurar Passport para manejar el registro de usuarios
 passport.use(
@@ -51,10 +51,10 @@ passport.use(
                 const data = req.body; // Obtener los datos del cuerpo de la solicitud
                 
                 //puesto de control
-               // console.log("data del registro: ", data);
+               console.log("data del registro: ", data);
 
                 const user = await userController.create(data); // Crear un nuevo usuario en la base de datos
-                
+                console.log("user creado: ", user)
                 return done(null, user, { message: "Usuario creado" }); // Llamar a done sin error y pasar el usuario creado
                
             } catch (error) {
@@ -73,9 +73,13 @@ passport.use(
             usernameField: "email" 
         },
         async (req, email, password, done) => { 
+            
             try {
+                console.log(email)
                 // Buscar el usuario en la base de datos por su email
                 const user = await userController.readByEmail(email);
+
+                console.log("user: ",user)
 
                 // si el usuario no existe retornar un error
                 if (!user) {

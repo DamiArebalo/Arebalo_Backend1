@@ -1,15 +1,12 @@
 // importar y crear instancias de controladores
-import ProductController from '../../data/mongo/controllers/productController.js';
-const productController = new ProductController();
+import productController from '../../controllers/productController.js';
 
-import CartController from '../../data/mongo/controllers/cartsController.js';
-const cartController = new CartController();
 
-import CategoryController from '../../data/mongo/controllers/categoryController.js';
-const categoryController = new CategoryController(); 
+import cartController from '../../controllers/cartController.js';
 
-import UserController from '../../data/mongo/controllers/userController.js';
-const userController = new UserController();
+
+import userController from '../../controllers/userController.js';
+
 
 // importar funciones de utilidad de token
 import { verifyTokenUtil } from '../../utils/token.util.js';
@@ -26,7 +23,7 @@ const createCart = async (data, user) => {
     data.user = user._id;
     console.log("data: ", data);
 
-    const newCart = await cartController.add(data); // Intentar crear carrito
+    const newCart = await cartController.create(data); // Intentar crear carrito
     console.log("newCart: ", newCart);
 
     if (newCart) {
@@ -82,7 +79,7 @@ const getUser = async (req) => {
     const verifydata = verifyTokenUtil(req.token)
     console.log(verifydata);
 
-    const userLog = await userController.readById(verifydata._id)
+    const userLog = await userController.getById(verifydata._id)
     console.log(userLog);
     
 }
@@ -94,7 +91,7 @@ const getUserByToken = async (token) => {
     const userID = await verifydata._id;
     //console.log("userID: ", userID);
 
-    const user = await userController.readById(userID);
+    const user = await userController.getById(userID);
     //console.log("user: ", user);
 
     return user;

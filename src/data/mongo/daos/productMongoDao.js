@@ -2,10 +2,15 @@ import MongoDao from './mongoDao.js';
 import ProductModel from '../models/productsModel.js';
 import config from '../../../config.js';
 
+import { query } from 'express';
+
+
 class ProductMongoDao extends MongoDao {
     constructor() {
         super(ProductModel);
     }
+
+    
 
     async getAll() {
         try {
@@ -51,5 +56,6 @@ class ProductMongoDao extends MongoDao {
         }
     }
 }
+
 
 export default ProductMongoDao;

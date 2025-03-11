@@ -1,19 +1,9 @@
 
 import { createCart, updatedCart, getUserByToken} from '../public/js/utils.js'; // Importar las funciones utilitarias
 
-import UserController from '../data/mongo/controllers/userController.js';
-
-import CartController from '../data/mongo/controllers/cartsController.js';
-
-import ProductController from '../data/mongo/controllers/productController.js';
-
-
 
 import cookie from 'cookie';
 
-const userController = new UserController();
-const cartController = new CartController();
-const productController = new ProductController();
 
 // Función para manejar conexiones de WebSocket
 export const handleSocketConnection = (socket) => {

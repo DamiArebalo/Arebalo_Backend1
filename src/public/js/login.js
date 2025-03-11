@@ -10,6 +10,7 @@ const socket = io();
 // console.log("loginBtn: ", $$loginBtn);
 // console.log("loginForm: ", $$loginForm);
 
+
 //evento de click en el botón de inicio de sesión
 $$loginBtn.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -19,7 +20,8 @@ $$loginBtn.addEventListener("click", async (e) => {
         const data = Object.fromEntries(formData); // Convierte FormData a objeto
         const jsonData = JSON.stringify(data); // Convierte el objeto a JSON
         //puesto de control
-        //console.log(jsonData);
+        console.log(formData)
+        console.log(jsonData);
 
         //configurar opciones para el request
         const options = {

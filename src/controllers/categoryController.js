@@ -1,28 +1,30 @@
-import { categoryService } from "../services/categoryService.js";
+import  categoryService  from "../services/categoryService.js";
 import Controllers from "./controllerManager.js";
 
 class CategoryController extends Controllers {
   constructor() {
     super(categoryService);
   }
-  getAll = async (req, res, next) => {
+  getAll = async (req, res) => {
     try {
       const response = await this.service.getAll();
       res.json(response);
     } catch (error) {
-      next(error);
+      res.josn(error)
     }
   };
 
-  getByName = async (req, res, next) => {
+  getByName = async (req, res) => {
     try {
       const { name } = req.params;
       const response = await this.service.getByName(name);
       res.json(response);
     } catch (error) {
-      next(error);
+      res.josn(error)
     }
   };
 }
 
-export const categoryController = new CategoryController();
+const categoryController = new CategoryController();
+
+export default categoryController;

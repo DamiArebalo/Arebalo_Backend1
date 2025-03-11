@@ -2,11 +2,11 @@ import CustomRouter from '../../utils/customRouter.util.js';
 import { socketServer } from '../../app.js';
 
 
-import ProductController from '../../data/mongo/controllers/productController.js';
+import productController from '../../controllers/productController.js';
 
 import { midVal, midExists } from '../../utils/validateProducts.js';
 
-const productController = new ProductController();
+
 
 class ProductsViewRouter extends CustomRouter {
     constructor() {
