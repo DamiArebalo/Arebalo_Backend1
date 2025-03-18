@@ -4,7 +4,7 @@ import daos  from "../data/factory.js";
 
 class PurchaseHistoryService extends Services {
   constructor() {
-    super(daos.daos.purchaseHistoryDao);
+    super(daos.purchaseHistoryDao);
   }
 
   create = async (data) => {

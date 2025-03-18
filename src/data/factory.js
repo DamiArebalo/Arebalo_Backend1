@@ -40,7 +40,8 @@ switch (persitance) {
             purchaseHistoryDao
         }
         console.log("inited to default MongoDB");
+        console.log("daos inited", daos);
         break;
 }
 
-export default {persitance, daos};
+export default daos;

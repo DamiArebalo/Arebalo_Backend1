@@ -28,7 +28,7 @@ async function handleCartAction(action, messageElement) {
       if (action === 'empty') {
           method = 'PUT';
       }else if(action === 'purchase'){
-          method = 'DELETE';
+          method = 'PUT';
       }
 
       const options = {

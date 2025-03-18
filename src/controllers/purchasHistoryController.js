@@ -6,70 +6,46 @@ class PurchaseHistoryController extends Controllers {
     super(purchaseHistoryService)
   }
 
-  create = async (req, res) => {
+  
+  getByUser = async (user_id) => {
     try {
-      const response = await this.service.create(req.body);
-      res.json(response);
+      return await this.service.getByUser(user_id);
     } catch (error) {
       throw error;
     }
   };
 
-  getByUser = async (req, res) => {
+  getByState = async (state) => {
     try {
-      const { user_id } = req.params;
-      const response = await this.service.getByUser(user_id);
-      res.json(response);
+      return await this.service.getByState(state);
     } catch (error) {
       throw error;
     }
   };
 
-  getByState = async (req, res) => {
+  getByDate = async (date) => {
     try {
-      const { state } = req.params;
-      const response = await this.service.getByState(state);
-      res.json(response);
+      return await this.service.getByDate(date);
     } catch (error) {
       throw error;
     }
   };
 
-  getByDate = async (req, res) => {
+
+  deleteByUser = async (user_id) => {
     try {
-      const { date } = req.params;
-      const response = await this.service.getByDate(date);
-      res.json(response);
+      return await this.service.deleteByUser(user_id);
+
     } catch (error) {
       throw error;
     }
   };
 
-  getById = async (req, res) => {
+  deleteById = async (id) => {
     try {
-      const { id } = req.params;
-      const response = await this.service.getById(id);
-      res.json(response);
-    } catch (error) {
-     throw error;
-    }
-  };
-
-  deleteByUser = async (req, res) => {
-    try {
-      const { user_id } = req.params;
-      const response = await this.service.deleteByUser(user_id);
-      res.json(response);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  deleteById = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const response = await this.service.deleteById(id);
-      res.json(response);
+      
+      return await this.service.deleteById(id);
+      
     } catch (error) {
       throw error;
     }

@@ -4,7 +4,7 @@ import daos  from "../data/factory.js";
 
 class CategoryService extends Services {
   constructor() {
-    super(daos.daos.categoryDao);
+    super(daos.categoryDao);
   }
 
   getAll = async () => {

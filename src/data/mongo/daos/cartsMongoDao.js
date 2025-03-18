@@ -8,7 +8,8 @@ class CartMongoDao extends MongoDao {
 
     async getById(id) {
         try {
-            return await CartModel.findOne(id).populate('products.product');
+            const cart = await CartModel.findOne(id).populate('products.product');
+            return cart
         } catch (err) {
             throw new Error(err.message);
         }
@@ -154,6 +155,8 @@ class CartMongoDao extends MongoDao {
             throw new Error('Error al verificar la existencia del usuario en el carrito: ' + err.message);
         }
     }
+
+   
 }
 
 export default CartMongoDao;

@@ -23,17 +23,17 @@ class ProductController extends Controllers{
       }
     }   
 
-    async getById(id) {
+    async getPaginated(query, options) {
       try {
-        return await this.service.getById(id);
+        return await this.service.getPaginated(query, options);
       } catch (error) {
         throw error;
       }
     }
 
-     async getPaginated(query, options) {
+    async updateStock(productId, quantity) {
       try {
-        return await this.service.getPaginated(query, options);
+        return await this.service.updateStock(productId, quantity);
       } catch (error) {
         throw error;
       }

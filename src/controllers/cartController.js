@@ -24,9 +24,9 @@ class CartController extends Controllers{
       }
     };
 
-    removeProdToCart = async (cartId, productId ) => {
+    removeProduct = async (cartId, productId ) => {
       try {
-        const response = await this.service.removeProdToCart(cartId, productId);
+        const response = await this.service.removeProduct(cartId, productId);
         return response;
       } catch (error) {
         throw error;
@@ -63,6 +63,15 @@ class CartController extends Controllers{
     removeAllProducts = async (cartId) => {
       try {
         const response = await this.service.removeAllProducts(cartId);
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    };
+
+    addProducts = async (cartId, products) => {
+      try {
+        const response = await this.service.addProducts(cartId, products);
         return response;
       } catch (error) {
         throw error;

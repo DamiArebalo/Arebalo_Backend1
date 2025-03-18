@@ -8,8 +8,8 @@ import  cartService  from "./cartService.js";
 
 class UserService extends Services {
   constructor() {
-    super(daos.daos.userDao);
-    console.log("dao users", daos.daos.userDao);
+    super(daos.userDao);
+    console.log("dao users", daos.userDao);
   }
 
   generateToken = (user) => {

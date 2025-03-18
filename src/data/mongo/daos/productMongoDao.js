@@ -55,6 +55,20 @@ class ProductMongoDao extends MongoDao {
             throw new Error(error);
         }
     }
+
+    async updateStock(productId, quantity) {
+        try {
+            const product = await ProductModel.findOne({_id:productId});
+            console.log("product: ", product);
+            if (!product) return null;
+
+            product.stock = quantity;
+            await product.save();
+            return product;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
 }
 
 

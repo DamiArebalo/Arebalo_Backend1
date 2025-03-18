@@ -3,8 +3,8 @@ import daos  from "../data/factory.js";
   
 class ProductService extends Services {
     constructor(){
-        super(daos.daos.prodDao);
-        console.log("dao", daos.daos.prodDao);
+        super(daos.prodDao);
+        console.log("dao", daos.prodDao);
         
     }
 
@@ -20,6 +20,14 @@ class ProductService extends Services {
     async getPaginated(query, options) {
       try {
         return await this.dao.getPaginated(query, options);
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    async updateStock(productId, quantity) {
+      try {
+        return await this.dao.updateStock(productId, quantity);
       } catch (error) {
         throw error;
       }

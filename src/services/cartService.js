@@ -3,7 +3,8 @@ import daos  from "../data/factory.js";
 
 class CartServices extends Services {
   constructor() {
-    super(daos.daos.cartDao);
+    super(daos.cartDao);
+    
   }
 
   createCart = async() =>{
@@ -22,9 +23,9 @@ class CartServices extends Services {
     }
   };
 
-  removeProdToCart = async (cartId, prodId) => {
+  removeProduct = async (cartId, prodId) => {
     try {
-      return await this.dao.removeProdToCart(cartId, prodId);
+      return await this.dao.removeProduct(cartId, prodId);
     } catch (error) {
       throw (error);
     }
@@ -65,6 +66,14 @@ class CartServices extends Services {
   removeAllProducts = async (cartId) => {
     try {
       return await this.dao.removeAllProducts(cartId);
+    } catch (error) {
+      throw (error);
+    }
+  };
+
+  addProducts = async (cartId, products) => {
+    try {
+      return await this.dao.addProducts(cartId, products);
     } catch (error) {
       throw (error);
     }
