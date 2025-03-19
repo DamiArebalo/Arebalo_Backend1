@@ -333,9 +333,8 @@ Utilizamos SWEET ALERT para mostrar alertas basadas en los eventos emitidos por 
 De esta manera, garantizamos que los usuarios reciban retroalimentación inmediata y clara sobre sus acciones, mejorando la experiencia general de la aplicación.
 ---
 
-## DAO - CONTROLLER - SERVCIE
 
-## **DAO (Data Access Object)**
+## ** DAO (Data Access Object) **
 
 El patrón **DAO** organiza y centraliza las operaciones con la base de datos, asegurando un acceso limpio y estructurado a los datos almacenados. Este enfoque permite desacoplar la lógica de negocio de la persistencia, facilitando la escalabilidad y el mantenimiento.
 
@@ -344,7 +343,7 @@ El patrón **DAO** organiza y centraliza las operaciones con la base de datos, a
 2. **Reutilización:** Las mismas funciones pueden usarse en múltiples partes del proyecto.
 3. **Mantenimiento Simplificado:** Cambios en la base de datos no afectan otras capas del sistema.
 
-## **Controller**
+## ** Controller **
 
 Los controladores en este proyecto actúan como intermediarios entre las rutas y la lógica de negocio. Su función principal es recibir las solicitudes entrantes, procesarlas y devolver una respuesta adecuada al cliente. También delegan las operaciones complejas a los servicios, manteniendo el código modular y organizado.
 
@@ -356,7 +355,7 @@ Los controladores en este proyecto actúan como intermediarios entre las rutas y
 
 ---
 
-## **Service**
+## ** Service **
 
 La capa de servicio contiene la lógica de negocio principal del proyecto. Es aquí donde se implementan las reglas de negocio, cálculos y flujos complejos. Al separar esta lógica de los controladores, se logra un código más limpio y fácilmente escalable.
 
@@ -367,12 +366,12 @@ La capa de servicio contiene la lógica de negocio principal del proyecto. Es aq
 
 ---
 
-### **Relación entre Controller y Service**
+### ** Relación entre Controller y Service **
 Los controladores manejan las solicitudes y respuestas mientras los servicios se encargan de ejecutar la lógica de negocio, creando una arquitectura clara y eficiente. Esto mejora la modularidad y hace que el proyecto sea más fácil de mantener y escalar.
 
 
 ---
-##  🛒VALIDACION DE COMPRA (CARRITO)
+##  🛒 VALIDACION DE COMPRA (CARRITO)
 
 La validación de compra se encarga de verificar que todos los productos del carrito tengan suficiente stock antes de procesar la compra. Además, actualiza el inventario, elimina productos no disponibles del carrito y registra los productos con problemas de disponibilidad.
 
@@ -403,7 +402,6 @@ async function validatePurchase(req, res, next) {
 ---
 ## 📨 MAILER
 
-### **Mailer**
 La función `mailer` utiliza la librería `nodemailer` para enviar correos electrónicos que notifican a los usuarios sobre el estado de sus compras. Los correos incluyen detalles de los productos adquiridos, el total de la compra, y un diseño profesional con imágenes adjuntas.
 
 #### Código Simplificado
@@ -484,7 +482,7 @@ async function getUserByToken(token) {
     return await userController.getById(verifydata._id);
 }
 ```
-### **Validación de Admin**
+### ** Validación de Admin **
 Este middleware verifica que el usuario autenticado tenga el rol de `ADMIN` antes de otorgar acceso a rutas protegidas. Si no cumple con el rol requerido, se devuelve un error de autenticación.
 
 #### Código Simplificado
