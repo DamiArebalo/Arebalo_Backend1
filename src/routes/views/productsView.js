@@ -5,6 +5,7 @@ import { socketServer } from '../../app.js';
 import productController from '../../controllers/productController.js';
 
 import { midVal, midExists } from '../../utils/validateProducts.js';
+import categoryController from '../../controllers/categoryController.js';
 
 
 
@@ -53,6 +54,8 @@ async function listProducts(req, res) {
 async function createProduct(req, res) {
 
     const datoFormu = req.body;
+
+    datoFormu.category = await categoryController.getByName(datoFormu.category);
     // console.log(datoFormu.priceList);
     //creacion del nuevo producto
     const newProduct = await productController.create({
@@ -61,7 +64,7 @@ async function createProduct(req, res) {
         priceList: datoFormu.priceList,
         description: datoFormu.description,
         stock: datoFormu.stock,
-        category: datoFormu.category
+        category: datoFormu.category._id
     });
 
     //  console.log(newProduct);

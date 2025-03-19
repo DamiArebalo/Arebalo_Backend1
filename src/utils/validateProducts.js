@@ -1,6 +1,8 @@
+import productController from "../controllers/productController.js";
+
 // Función para encontrar el producto por ID usando el controlador
 async function indexExists(vId) {
-    const product = await productController.get({ code: vId });
+    const product = await productController.getById({ _id: vId });
     return product ? product : false;
 }
 

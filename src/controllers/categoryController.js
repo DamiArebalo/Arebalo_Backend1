@@ -14,13 +14,12 @@ class CategoryController extends Controllers {
     }
   };
 
-  getByName = async (req, res) => {
+  getByName = async (name) => {
     try {
-      const { name } = req.params;
-      const response = await this.service.getByName(name);
-      res.json(response);
+      return await this.service.getByName(name);
+      
     } catch (error) {
-      res.josn(error)
+      throw error;
     }
   };
 }

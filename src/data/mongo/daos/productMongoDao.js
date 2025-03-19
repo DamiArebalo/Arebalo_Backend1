@@ -34,14 +34,14 @@ class ProductMongoDao extends MongoDao {
         }
     }
 
-    async stats(limit) {
+    async groupByStock(limit) {
         try {
-            const stats = await ProductModel.aggregate([
+            const group = await ProductModel.aggregate([
                 { $match: { stock: limit } },
                 { $group: { _id: '$title', count: { $sum: 1 } } },
                 { $sort: { count: -1 } }
             ]);
-            return stats;
+            return group;
         } catch (error) {
             throw new Error(error);
         }
@@ -64,6 +64,15 @@ class ProductMongoDao extends MongoDao {
 
             product.stock = quantity;
             await product.save();
+            return product;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
+    async getByFilter(filter) {
+        try {
+            const product = await ProductModel.findOne(filter);
             return product;
         } catch (error) {
             throw new Error(error);

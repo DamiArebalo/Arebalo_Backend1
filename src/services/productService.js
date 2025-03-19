@@ -32,13 +32,21 @@ class ProductService extends Services {
         throw error;
       }
     }
-    //async stats(limit) {
-    //  try {
-    //    return await this.dao.stats(limit);
-    //  } catch (error) {
-    //    throw error;
-    //  }
-    //}     
+    async groupByStock(limit) {
+     try {
+       return await this.dao.groupByStock(limit);
+     } catch (error) {
+       throw error;
+     }
+    }    
+    
+    async getByFilter(filter) {
+     try {
+       return await this.dao.getbyFilter(filter);
+     } catch (error) {
+       throw error;
+     }   
+    }
 
 
 }

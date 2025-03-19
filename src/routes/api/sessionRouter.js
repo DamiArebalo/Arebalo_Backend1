@@ -5,6 +5,8 @@ import passportLocal from "../../middlewares/passport.mid.js";
 import userController from "../../controllers/userController.js";
 import { createTokenUtil, finishTokenUtil, verifyTokenUtil } from "../../utils/token.util.js";
 
+import UserDto from "../../dtos/userDto.js";
+
 
 class SessionApiRouter extends CustomRouter {
     constructor() {
@@ -34,16 +36,10 @@ async function dataOnline(req, res) {
 
     const user = await userController.getById(verifydata._id)
 
-    const dataUser = {
-        _id: user._id,
-        role: user.role,
-        isOnline: true,
-        name: user.name,
-    }
+    const dataUser = new UserDto(user);
    
-
     if(user){
-        return res.json200({ token, verifydata,dataUser, message })
+        return res.json200({ dataUser})
        
     }   
     return res.json401()

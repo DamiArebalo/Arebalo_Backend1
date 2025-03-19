@@ -6,7 +6,7 @@ class CategoryMongoDao extends MongoDao {
         super(CategoryModel);
     }
 
-    async findByName(name) {
+    async getByName(name) {
         try {
             const category = await CategoryModel.findOne({ name: name });
             return category;

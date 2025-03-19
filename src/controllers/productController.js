@@ -39,6 +39,21 @@ class ProductController extends Controllers{
       }
     }
 
+    async groupByStock(limit) {
+        try {
+            return await this.service.groupByStock(limit);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getByFilter(filter) {
+        try {
+            return await this.service.getbyFilter(filter);
+        } catch (error) {
+            throw error;
+        }   
+    }
     
 }
 

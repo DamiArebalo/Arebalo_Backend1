@@ -7,6 +7,7 @@ import config from '../../config.js';
 import { verifyTokenUtil } from '../../utils/token.util.js';
 import cookieParser from 'cookie-parser';
 import { socketServer } from '../../app.js';
+import e from 'express';
 
 
 class HomeViewRouter extends CustomRouter {
@@ -187,16 +188,87 @@ async function getProducts(req, res) {
     }
 }
 
+// Función para verificar si un usuario es administrador
+async function isAdmin(user) {
+    try {
+        let result;
+        if (user) {
+            result = user.role === "ADMIN" ? true : false;
+            return result;
+        } else {
+            const error = new Error("USER NOT FOUND");
+            error.statusCode = 401;
+            return error;
+        }
+    } catch (error) {
+        return error;
+    }
+}
 // Función para renderizar el panel de administración
 async function getAdmin(req, res) {
     try {
         const products = await productController.getAll();
+        //console.log("products: ", products);
 
-        res.render('admin', {
-            title: 'Panel de Administración',
-            products,
-            user: req.user
-        });
+        const token = req.cookies.authToken;
+        console.log("token: ", token);
+        let admin, isAuthenticated;
+
+        if (token) {
+            try {
+                const user = await tokenToUser(token);
+                if (!user) {
+                    const error = new Error("USER NOT FOUND");
+                    error.statusCode = 404;
+                    return error;
+                }
+            
+                console.log("user get: ", user);
+                if (user.role !== "ADMIN") {
+                    const error = new Error("USER NOT ADMIN");
+                    error.statusCode = 401;
+                    return error;
+                }else{
+                    isAuthenticated = true;
+                    admin = true;
+                }
+
+                req.user = user;
+                
+            
+                
+                
+            } catch (error) {
+                console.log("error en tokenToUser: ", error);
+                return res.json401();
+            }
+        } else {
+            console.log("No hay token");
+            isAuthenticated = false;
+            admin = false;
+        }
+
+        console.log("isAdmin: " + isAdmin);
+        console.log("isAuthenticated: " + isAuthenticated);
+        console.log("userName: " + userName);
+
+        const user = new UserDto(req.user);
+
+        if (!isAdmin) {
+            res.json404();
+        }else{
+            res.render('admin', {
+                title: 'Panel de Administración',
+                products: products,
+                user: user,
+                isAdmin: admin,
+                isAuthenticated: isAuthenticated,
+            });
+
+        }
+
+
+        
     } catch (error) {
         res.status(500).send('Error al obtener productos para el panel de administración');
     }
@@ -221,22 +293,7 @@ async function tokenToUser(token) {
     }
 }
 
-// Función para verificar si un usuario es administrador
-async function isAdmin(user) {
-    try {
-        let result;
-        if (user) {
-            result = user.role === "ADMIN" ? true : false;
-            return result;
-        } else {
-            const error = new Error("USER NOT FOUND");
-            error.statusCode = 401;
-            return error;
-        }
-    } catch (error) {
-        return error;
-    }
-}
+
 
 let homeRouter = new HomeViewRouter();
 homeRouter = homeRouter.getRouter();

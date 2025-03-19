@@ -17,7 +17,7 @@ class ProductsApiRouter extends CustomRouter {
         this.read('/:id', listOneProduct); // Ruta para listar un producto específico
         this.update('/:id', updateProduct); // Ruta para actualizar un producto
         this.destroy('/:id', deleteProduct); // Ruta para eliminar un producto
-        this.read('/stats/:limit', statsProducts); // Ruta para obtener estadísticas de productos
+        this.read('/stats/:limit', groupByStock); // Ruta para obtener estadísticas de productos
     }
 }
 
@@ -33,7 +33,7 @@ async function listProducts(req, res, next) {
     const filter = {};
     // Filtrar por categoría
     if (categoryName) {
-        const category = await categoryController.findByName(categoryName);
+        const category = await categoryController.getByName(categoryName);
         if (category) {
             filter.category = category._id; // Usar el ID de la categoría encontrada
         } else {
@@ -68,7 +68,7 @@ async function listProducts(req, res, next) {
 async function listOneProduct(req, res) {
     const id = parseInt(req.params.id);
 
-    const product = await productController.get({ _id: id });
+    const product = await productController.getById({ _id: id });
 
     if (!indexExists(id)) {
         res.json404();
@@ -79,45 +79,40 @@ async function listOneProduct(req, res) {
 
 // Función para actualizar un producto
 async function updateProduct(req, res) {
-    const productCode = req.params.id;
+    const productId = req.params.id;
     const updatedData = req.body;
-    let filter = "";
+    
 
-    // Validación del parámetro
-    if (!indexExists(productCode)) {
-        res.json404();
-    }
-
-    if (productCode == await productController.get({ _id: productCode })) {
-        filter = { _id: productCode };
-    } else {
-        filter = { code: productCode };
-    }
+    
 
     // No permitir la actualización del ID
     if (updatedData.hasOwnProperty('_id') || updatedData.hasOwnProperty('code')) {
-        console.warn(`Intento de modificación de id/code: ${productCode} Bloqueado Correctamente`);
+        console.warn(`Intento de modificación de id/code: ${productId} Bloqueado Correctamente`);
         res.json400('No se puede actualizar el ID/CODE del producto');
     }
 
-    const updatedProduct = await productController.update(filter, updatedData);
+    const updatedProduct = await productController.update(productId, updatedData);
     res.json200({ response: updatedProduct, message: "Product updated" });
-    console.log(`Producto ${await productController.get({ filter })} actualizado correctamente`);
+    console.log(`Producto actualizado correctamente`);
 }
 
 // Función para crear un producto
 async function createProduct(req, res) {
     const datoFormu = req.body;
 
+    datoFormu.category = await categoryController.getByName(datoFormu.category);
+
     // Creación del nuevo producto
-    const newProduct = await productController.add({
+    const newProduct = await productController.create({
         code: datoFormu.code,
         title: datoFormu.title,
         priceList: datoFormu.priceList,
         description: datoFormu.description,
         stock: datoFormu.stock,
-        category: datoFormu.category
+        category: datoFormu.category._id
     });
+
+
     res.json200({ response: { newProduct, thumbnail: req.file }, message: "Product added" });
     
     res.send(console.log(`Producto ${datoFormu.title} Agregado correctamente`));
@@ -133,14 +128,14 @@ async function deleteProduct(req, res) {
     }
 
     // Eliminar el producto del array
-    const deletedProduct = productController.delete({ code: productId });
+    const deletedProduct = productController.delete({ _id: productId });
     res.json200({ response: deletedProduct, message: "Product deleted" });
 }
 
 // Función para obtener estadísticas de productos
-async function statsProducts(req, res) {
+async function groupByStock(req, res) {
     const limit = parseInt(req.params.limit);
-    const stats = await productController.stats(limit);
+    const stats = await productController.groupByStock(limit);
     res.json200({ response: stats, message: "Statistics found" });
 }
 
