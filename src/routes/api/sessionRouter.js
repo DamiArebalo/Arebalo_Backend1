@@ -1,11 +1,13 @@
 import CustomRouter from "../../utils/customRouter.util.js";
 
 import session from "express-session";
-import passportLocal from "../../middlewares/passport.mid.js";
+
 import userController from "../../controllers/userController.js";
 import { createTokenUtil, finishTokenUtil, verifyTokenUtil } from "../../utils/token.util.js";
 
 import UserDto from "../../dtos/userDto.js";
+import validateUser from "../../middlewares/validateUser.mid.js";
+import passport from '../../middlewares/passport.mid.js';
 
 
 class SessionApiRouter extends CustomRouter {
@@ -14,8 +16,10 @@ class SessionApiRouter extends CustomRouter {
         this.init();
     }
     init = () => {
-        this.create("/logout", logout)
-        this.read("/current", dataOnline)
+        this.create("/logout",validateUser, logout)
+        this.read("/current",validateUser, dataOnline)
+        this.create("/login", login)
+        this.create("/register", register)
     }
 }
 let sessionApiRouter = new SessionApiRouter();
@@ -46,25 +50,50 @@ async function dataOnline(req, res) {
 }
 
 
-//funcion para registrar un usuario
-async function register(req, res,) {
-    //middlewares
-    const response = req.user
-    const message = "user registered"
-    return res.json201( response, message )
+// Función para manejar el inicio de sesión
+async function login(req, res, next) {
+    passport.authenticate('login', { session: false }, async (err, user, message) => {
+        if (err || !user) {
+            console.log("error: ", err);
+            socketServer.emit('errorLogin', {
+                err: err.message
+            });
+            return res.json401();
+        }
 
+        let token = req.token;
+        console.log("token: ", token);
+
+        if (token) {
+            console.log("token guardado");
+            res.cookie('authToken', token, { httpOnly: true, secure: true });
+        }
+
+        console.log("user loged: ", user);
+        console.log("message loged: ", message);
+
+        
+
+        return res.json200({ message: "ok" });
+    })(req, res, next);
 }
 
-//funcion para iniciar sesión
-async function login(req, res) {
+// Función para manejar el registro de usuarios
+async function register(req, res, next) {
+    passport.authenticate('register', { session: false }, async (err, user, message) => {
+        if (err || !user) {
+            console.log("error: ", err);
 
-    const message = "User Loged IN"
+            return res.json401();
+        }
 
+        console.log("user: ", user);
+        console.log("message: ", message);
 
-    const response = req.token
-    return res.json200({ response, message })
-
+    })(req, res, next);
 }
+
+
 //funcion para verificar si el usuario está en línea
 async function online(req, res) {
 

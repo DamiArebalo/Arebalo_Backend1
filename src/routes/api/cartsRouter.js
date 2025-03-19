@@ -135,7 +135,7 @@ async function updateProductQuantity(req, res) {
     const productId = req.params.pid;
     const { quantity } = req.body;
 
-    const updatedCart = await cartController.updateProductQuantity(cartId, productId, quantity);
+    const updatedCart = await cartController.updateProdQuantityToCart(cartId, productId, quantity);
 
     if (!updatedCart) {
         res.json404();  

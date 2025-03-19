@@ -6,6 +6,8 @@ import productController from '../../controllers/productController.js';
 
 import { midVal, midExists } from '../../utils/validateProducts.js';
 import categoryController from '../../controllers/categoryController.js';
+import validateUser from '../../middlewares/validateUser.mid.js';
+import validateAdmin from '../../middlewares/validateAdmin.mid.js';
 
 
 
@@ -17,7 +19,7 @@ class ProductsViewRouter extends CustomRouter {
     init = () => {
         this.read('/', listProducts)
         this.read('/realtimeproducts', listProducts)
-        this.create('/realtimeproducts', midVal, midExists, createProduct)
+        this.create('/realtimeproducts',validateUser,validateAdmin, midVal, midExists, createProduct)
     }
 }
 

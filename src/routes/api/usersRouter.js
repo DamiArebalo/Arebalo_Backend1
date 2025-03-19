@@ -1,5 +1,7 @@
 import CustomRouter from "../../utils/customRouter.util.js";
 import userController from "../../controllers/userController.js";
+import validateUser from "../../middlewares/validateUser.mid.js";
+import validateAdmin from "../../middlewares/validateAdmin.mid.js";
 
 // Define el enrutador para las operaciones de usuarios
 class UsersApiRouter extends CustomRouter {
@@ -9,10 +11,10 @@ class UsersApiRouter extends CustomRouter {
     }
     // Inicializa las rutas del enrutador
     init = () => {
-        this.create("/", createUser); // Ruta para crear un usuario
-        this.read("/", readUsers); // Ruta para leer usuarios
-        this.update("/:id", updateUser); // Ruta para actualizar un usuario
-        this.destroy("/:id", destroyUser); // Ruta para eliminar un usuario
+        this.create("/",validateUser,validateAdmin, createUser); // Ruta para crear un usuario
+        this.read("/",validateUser,validateAdmin, readUsers); // Ruta para leer usuarios
+        this.update("/:id",validateUser, updateUser); // Ruta para actualizar un usuario
+        this.destroy("/:id",validateUser, destroyUser); // Ruta para eliminar un usuario
     }
 }
 
@@ -52,6 +54,6 @@ async function updateUser(req, res) {
 async function destroyUser(req, res) {
     const { id } = req.params;
     const message = "USER DELETED";
-    const response = await userController.destroy(id);
+    const response = await userController.delete(id);
     return res.status(200).json({ response, message });
 }

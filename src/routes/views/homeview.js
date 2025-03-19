@@ -9,6 +9,9 @@ import cookieParser from 'cookie-parser';
 import { socketServer } from '../../app.js';
 import e from 'express';
 
+import validateUser from '../../middlewares/validateUser.mid.js';
+import validateAdmin from '../../middlewares/validateAdmin.mid.js';
+
 
 class HomeViewRouter extends CustomRouter {
     constructor() {
@@ -21,12 +24,13 @@ class HomeViewRouter extends CustomRouter {
         this.read('/', getHome);
         this.read('/register', getRegister);
         this.create('/register', register);
+        this.use('/login', cookieParser());
         this.read('/login', getLogin);
         this.create('/login', login);
         this.read('/logout', getLogout);
         this.read('/products', getProducts);
-        this.read('/admin', getAdmin);
-        this.use('/login', cookieParser());
+        this.read('/admin',validateUser,validateAdmin, getAdmin);
+        
     }
 }
 

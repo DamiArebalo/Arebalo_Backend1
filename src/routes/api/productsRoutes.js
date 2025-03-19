@@ -3,6 +3,8 @@ import productController from "../../controllers/productController.js";
 import { indexExists, midVal, midExists } from '../../utils/validateProducts.js';
 import transformPaginationResult from '../../utils/transformPaginated.js';
 import categoryController from "../../controllers/categoryController.js";
+import validateUser from "../../middlewares/validateUser.mid.js";
+import validateAdmin from "../../middlewares/validateAdmin.mid.js";
 
 // Define el enrutador para las operaciones de productos
 class ProductsApiRouter extends CustomRouter {
@@ -12,12 +14,12 @@ class ProductsApiRouter extends CustomRouter {
     }
     // Inicializa las rutas del enrutador
     init = () => {
-        this.create('/', midVal, midExists, createProduct); // Ruta para crear un producto
+        this.create('/',validateUser,validateAdmin, midVal, midExists, createProduct); // Ruta para crear un producto
         this.read("/", listProducts); // Ruta para listar productos
-        this.read('/:id', listOneProduct); // Ruta para listar un producto específico
-        this.update('/:id', updateProduct); // Ruta para actualizar un producto
-        this.destroy('/:id', deleteProduct); // Ruta para eliminar un producto
-        this.read('/stats/:limit', groupByStock); // Ruta para obtener estadísticas de productos
+        this.read('/:id',validateUser, listOneProduct); // Ruta para listar un producto específico
+        this.update('/:id',validateUser,validateAdmin, updateProduct); // Ruta para actualizar un producto
+        this.destroy('/:id',validateUser,validateAdmin, deleteProduct); // Ruta para eliminar un producto
+        this.read('/stats/:limit',validateUser, groupByStock); // Ruta para obtener estadísticas de productos
     }
 }
 
@@ -66,9 +68,10 @@ async function listProducts(req, res, next) {
 
 // GET --> Mostrar solo un producto filtrando por su ID
 async function listOneProduct(req, res) {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
+    console.log("id prod: ", id);
 
-    const product = await productController.getById({ _id: id });
+    const product = await productController.getById(id);
 
     if (!indexExists(id)) {
         res.json404();
