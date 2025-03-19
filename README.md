@@ -1,4 +1,4 @@
-# 🚀 Entrega Final Backend 1
+# 🚀 Entrega Final Backend 2
 
 ## Carlos Damian Arebalo
 
@@ -19,6 +19,13 @@
   - [Utilidades Importantes](#-utilidades-importantes)
   - [Seguridad](#-seguridad)
 - [Alertas de Confirmación y Error](#-alertas-de-confirmación-y-error)
+- [DAO (Data Access Object)](#-dao-data-access-object)
+- [Service](#-service)
+- [Controller](#-controller)
+- [Validación de Compra](#-validación-de-compra)
+- [Mailer](#-mailer)
+- [Middleware de Validación de Usuario](#-middleware-de-validación-de-usuario)
+- [Middleware de Validación de Admin](#-middleware-de-validación-de-admin)
 - [Cómo Ejecutar Mi Código](#-cómo-ejecutar-mi-código)
 
 ---
@@ -295,7 +302,7 @@ Similar a la función de inicio de sesión, esta función maneja el proceso de r
 
 ### Implementación en el Frontend
 
-Utilizamos SWAL fire para mostrar alertas basadas en los eventos emitidos por los sockets. Por ejemplo, en el archivo `register.js`:
+Utilizamos SWEET ALERT para mostrar alertas basadas en los eventos emitidos por los sockets. Por ejemplo, en el archivo `register.js`:
 
 - **Escuchar Evento de Registro Exitoso**:
     ```javascript
@@ -326,7 +333,173 @@ Utilizamos SWAL fire para mostrar alertas basadas en los eventos emitidos por lo
 De esta manera, garantizamos que los usuarios reciban retroalimentación inmediata y clara sobre sus acciones, mejorando la experiencia general de la aplicación.
 ---
 
+## DAO - CONTROLLER - SERVCIE
 
+## **DAO (Data Access Object)**
+
+El patrón **DAO** organiza y centraliza las operaciones con la base de datos, asegurando un acceso limpio y estructurado a los datos almacenados. Este enfoque permite desacoplar la lógica de negocio de la persistencia, facilitando la escalabilidad y el mantenimiento.
+
+### **Ventajas del Uso de DAO**
+1. **Modularidad:** Separa las operaciones de datos del resto del sistema.
+2. **Reutilización:** Las mismas funciones pueden usarse en múltiples partes del proyecto.
+3. **Mantenimiento Simplificado:** Cambios en la base de datos no afectan otras capas del sistema.
+
+## **Controller**
+
+Los controladores en este proyecto actúan como intermediarios entre las rutas y la lógica de negocio. Su función principal es recibir las solicitudes entrantes, procesarlas y devolver una respuesta adecuada al cliente. También delegan las operaciones complejas a los servicios, manteniendo el código modular y organizado.
+
+### **Funciones Principales de los Controladores**
+1. **Gestión de Solicitudes:** Manejan las operaciones CRUD de entidades como productos, carritos y usuarios.
+2. **Validaciones:** Verifican que los datos proporcionados por el usuario sean correctos antes de proceder.
+3. **Comunicación con Servicios:** Llaman a las funciones del servicio correspondiente para realizar operaciones más específicas o complejas.
+4. **Estructura Modular:** Facilitan la reutilización y mantenimiento del código.
+
+---
+
+## **Service**
+
+La capa de servicio contiene la lógica de negocio principal del proyecto. Es aquí donde se implementan las reglas de negocio, cálculos y flujos complejos. Al separar esta lógica de los controladores, se logra un código más limpio y fácilmente escalable.
+
+### **Funciones Principales de los Servicios**
+1. **Procesamiento de Lógica Compleja:** Realizan tareas como validaciones avanzadas, cálculos de totales y operaciones cruzadas entre varias entidades.
+2. **Integración con DAO:** Interactúan directamente con los DAO para acceder o modificar datos en la base de datos.
+3. **Reutilización:** Centralizan funciones reutilizables para evitar redundancias y simplificar la gestión del código.
+
+---
+
+### **Relación entre Controller y Service**
+Los controladores manejan las solicitudes y respuestas mientras los servicios se encargan de ejecutar la lógica de negocio, creando una arquitectura clara y eficiente. Esto mejora la modularidad y hace que el proyecto sea más fácil de mantener y escalar.
+
+
+---
+##  🛒VALIDACION DE COMPRA (CARRITO)
+
+La validación de compra se encarga de verificar que todos los productos del carrito tengan suficiente stock antes de procesar la compra. Además, actualiza el inventario, elimina productos no disponibles del carrito y registra los productos con problemas de disponibilidad.
+
+#### Código Simplificado
+```javascript
+async function validatePurchase(req, res, next) {
+    const cartId = req.params.cid;
+    const cart = await cartController.getById({ _id: cartId });
+
+    let productsNotAvailable = [];
+
+    for (let product of cart.products) {
+        const stock = await readStockByProduct(product.product._id);
+        if (stock >= product.quantity) {
+            await productController.updateStock(product.product._id, product.quantity);
+        } else {
+            productsNotAvailable.push(product);
+            await cartController.removeProduct({ _id: cartId }, product.product._id);
+        }
+    }
+
+    if (productsNotAvailable.length > 0) {
+        req.productsNotAvailable = productsNotAvailable;
+    }
+    next();
+}
+
+---
+## 📨 MAILER
+
+### **Mailer**
+La función `mailer` utiliza la librería `nodemailer` para enviar correos electrónicos que notifican a los usuarios sobre el estado de sus compras. Los correos incluyen detalles de los productos adquiridos, el total de la compra, y un diseño profesional con imágenes adjuntas.
+
+#### Código Simplificado
+```javascript
+import nodemailer from "nodemailer";
+
+async function mailer(user, products, total) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: `RITYJUST <${process.env.GMAIL_USER}>`,
+        to: user.email,
+        subject: 'RITY JUST - Confirmación de Compra',
+        html: `
+            // HTML del correo
+        `,
+        attachments: [
+            {
+                filename: 'banner.png',
+                path: "./src/public/img/thanksyou.png",
+                cid: 'banner-image'
+            }
+        ]
+    };
+
+    await transporter.sendMail(mailOptions);
+}
+```
+--- 
+
+
+## 📄DTO (DATA TRANSFER OBJECT) - USER
+
+El **User DTO** (Data Transfer Object) centraliza y organiza los datos de usuario en un formato seguro y estructurado para ser utilizados en distintas capas del sistema.
+
+### **Definición**
+El DTO transforma los datos del usuario provenientes de la base de datos, exponiendo únicamente la información necesaria. En este caso, incluye propiedades como `name`, `email`, `cart`, `role` e `isOnline`. Este enfoque mejora la seguridad al evitar exponer datos sensibles innecesarios.
+
+#### Ejemplo de Implementación
+```javascript
+export default class UserDto {
+    constructor(user) {
+        this.name = user.name;
+        this.email = user.email;
+        if(user.cart != null){
+            this.cart = user.cart;
+        }
+        this.role = user.role;
+        this.isOnline = user.isOnline;
+    }
+}
+## 🛡️ Middleware de Validación
+
+### **Validación de Usuario**
+Este middleware garantiza que el usuario esté autenticado al verificar la validez del token JWT. Si el token es válido, los datos del usuario se transforman utilizando el DTO antes de continuar.
+
+#### Código Simplificado
+```javascript
+export default async function validateUser(req, res, next) {
+    const token = req.cookies.authToken;
+    if (!token) return res.json401();
+
+    const user = await getUserByToken(token);
+    if (!user) return res.json401();
+
+    req.user = new UserDto(user);
+    next();
+}
+
+async function getUserByToken(token) {
+    const verifydata = verifyTokenUtil(token);
+    return await userController.getById(verifydata._id);
+}
+```
+### **Validación de Admin**
+Este middleware verifica que el usuario autenticado tenga el rol de `ADMIN` antes de otorgar acceso a rutas protegidas. Si no cumple con el rol requerido, se devuelve un error de autenticación.
+
+#### Código Simplificado
+```javascript
+export default async function validateAdmin(req, res, next) {
+    if (req.user.role !== 'ADMIN') {
+        return res.json401(); // Respuesta de error 401 (no autorizado)
+    }
+    next(); // Permite el acceso si el rol es válido
+}
+
+
+
+
+---
 ## 🏃‍♂️ Cómo Ejecutar Mi Código
 
 1. Asegúrate de tener Node.js y MongoDB instalados en tu sistema.
