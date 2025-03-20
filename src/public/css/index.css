@@ -341,3 +341,156 @@ li:nth-child(odd) {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
+
+
+.actionContent {
+  display: none; /* Por defecto, ocultar contenido */
+}
+
+.actionContent.active {
+  display: block; /* Mostrar contenido activo */
+}
+
+/* Estilos para el panel de administración */
+.action-btn {
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+}
+
+.actionContent {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.actionContent h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.actionContent p {
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+.actionContent button {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.actionContent button:hover {
+  background-color: #0069d9;
+}
+
+.actionContent button:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.actionContent .form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.actionContent .form-group {
+  margin-bottom: 1rem;
+}
+
+.actionContent .form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #374151;
+  font-weight: 500;
+}
+
+.actionContent .form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  transition: border-color 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.actionContent .form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.actionContent .form-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.actionContent .submit-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.actionContent .submit-btn:hover {
+  background: #1d4ed8;
+}
+
+.actionContent .submit-btn i {
+  font-size: 1rem;
+}
+
+/* Grilla para el formulario en pantallas grandes */
+@media (min-width: 768px) {
+  .actionContent .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+  }
+  
+  .actionContent .form-group.full-width {
+      grid-column: 1 / -1;
+  }
+} 
+
+
+.actionContent {
+  display: none; /* Por defecto, ocultar contenido */
+}
+
+.actionContent.active {
+  display: block; /* Mostrar contenido activo */
+
+}

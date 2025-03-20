@@ -108,10 +108,10 @@ async function online(req, res) {
 
 //funcion para cerrar sesión
 async function logout(req, res) {
-    session = req.session
     req.session.destroy();
-    const message = "User Loged OUT"
-    return res.json200({ session, message })
+    res.clearCookie('authToken');
+    let message = "User Loged OUT"
+    return res.json200({ message })
 }
 
 //funcion para verificar si el token es válido

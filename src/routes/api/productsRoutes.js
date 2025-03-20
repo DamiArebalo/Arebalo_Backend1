@@ -20,6 +20,7 @@ class ProductsApiRouter extends CustomRouter {
         this.update('/:id',validateUser,validateAdmin, updateProduct); // Ruta para actualizar un producto
         this.destroy('/:id',validateUser,validateAdmin, deleteProduct); // Ruta para eliminar un producto
         this.read('/stats/:limit',validateUser, groupByStock); // Ruta para obtener estadísticas de productos
+        this.read('/get/all/',validateUser, getAllProducts); // Ruta para obtener todos los productos
     }
 }
 
@@ -69,7 +70,7 @@ async function listProducts(req, res, next) {
 // GET --> Mostrar solo un producto filtrando por su ID
 async function listOneProduct(req, res) {
     const id = req.params.id;
-    console.log("id prod: ", id);
+    //console.log("id prod: ", id);
 
     const product = await productController.getById(id);
 
@@ -140,6 +141,12 @@ async function groupByStock(req, res) {
     const limit = parseInt(req.params.limit);
     const stats = await productController.groupByStock(limit);
     res.json200({ response: stats, message: "Statistics found" });
+}
+
+// Función para obtener todos los productos
+async function getAllProducts(req, res) {
+    const products = await productController.getAllProducts();
+    res.json200({ response: products, message: "All products found" });
 }
 
 let productsRouter = new ProductsApiRouter();

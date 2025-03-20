@@ -79,7 +79,15 @@ async function emptyCart(req, res) {
 
     res.json200({ response: updatedCart, message: "Carrito vaciado" });
 }
-
+async function readCartEmpty(req, res) {
+    const isAuthenticated = true;
+    res.render('cart', {
+        products : [],
+        total : 0, 
+        cartId : null,
+        isAuthenticated: isAuthenticated,
+    });
+}
 
 
 async function validatePurchase(req, res, next) {
@@ -225,15 +233,6 @@ async function purchaseCart(req, res) {
     
 }
 
-async function readCartEmpty(req, res) {
-    const isAuthenticated = true;
-    res.render('cart', {
-        products : [],
-        total : 0, 
-        cartId : null,
-        isAuthenticated: isAuthenticated,
-    });
-}
 
 async function readStockByProduct(productId) {
     const product = await productController.getById({_id: productId});
@@ -250,9 +249,9 @@ async function mailer(req, res, user, products, total) {
         }
     });
     const mailOptions = {
-        from: `CoderTest <${process.env.GMAIL_USER}>`,
-        to: 'damianarebalo12@gmail.com',
-        subject: 'Arebalo - Compra',
+        from: `RITYJUST <${process.env.GMAIL_USER}>`,
+        to: `${user.email}`,
+        subject: 'RITY JUST - Compra',
         html: ` <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -265,7 +264,7 @@ async function mailer(req, res, user, products, total) {
                             <img src="cid:banner-image" alt="Gracias por tu compra">
                         </div>
                         <div class="content">
-                            <h2>¡Gracias por tu compra en RITY JUST, ${user.name}!</h2>
+                            <h2>¡Gracias por tu compra ${user.name}!</h2>
                             <p>Estos son los detalles de tu pedido:</p>
                             <ul>
                                 ${products.map(product => `

@@ -10,9 +10,7 @@ class ProductMongoDao extends MongoDao {
         super(ProductModel);
     }
 
-    
-
-    async getAll() {
+    async getAllProducts() {
         try {
             return await ProductModel.find()
                 .populate({

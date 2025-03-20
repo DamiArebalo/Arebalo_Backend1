@@ -7,13 +7,14 @@ class ProductController extends Controllers{
         super(prodService)
     }
 
-    async getAll() {
+    async getAllProducts() {
       try {
-        return await this.service.getAll();
+        return await this.service.getAllProducts();
       } catch (error) {
         throw error;
       }
     }
+    
 
     async getByCode(code) {
       try {

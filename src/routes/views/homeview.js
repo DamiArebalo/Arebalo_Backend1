@@ -11,6 +11,7 @@ import e from 'express';
 
 import validateUser from '../../middlewares/validateUser.mid.js';
 import validateAdmin from '../../middlewares/validateAdmin.mid.js';
+import UserDto from '../../dtos/userDto.js';
 
 
 class HomeViewRouter extends CustomRouter {
@@ -116,7 +117,7 @@ async function getHome(req, res) {
             userName = user.name;
             req.user = user;
             isAuthenticated = true;
-            admin = await isAdmin(user);
+           if(user.role === 'ADMIN')admin = true;
         } catch (error) {
             console.log("error en tokenToUser: ", error);
             return res.json401();
@@ -127,9 +128,9 @@ async function getHome(req, res) {
         admin = false;
     }
 
-    console.log("isAdmin: " + admin);
-    console.log("isAuthenticated: " + isAuthenticated);
-    console.log("userName: " + userName);
+    // console.log("isAdmin: " + admin);
+    // console.log("isAuthenticated: " + isAuthenticated);
+    // console.log("userName: " + userName);
 
     const searchQuery = { ...JSON.parse(query || '{}'), status: true };
     const products = await productController.getPaginated(searchQuery, options);
@@ -164,7 +165,12 @@ async function getLogout(req, res) {
 // Función para obtener y renderizar los productos
 async function getProducts(req, res) {
     try {
-        const isAdmin = await isAdmin(req);
+        let isAdmin;
+        if(req.user.role === 'ADMIN'){
+            isAdmin = true;
+        }else{
+            isAdmin = false;
+        }
         const { limit, page, sort, query } = req.query;
 
         const sortOrder = sort === 'desc' ? -1 : (sort === 'asc' ? 1 : null);
@@ -192,26 +198,12 @@ async function getProducts(req, res) {
     }
 }
 
-// Función para verificar si un usuario es administrador
-async function isAdmin(user) {
-    try {
-        let result;
-        if (user) {
-            result = user.role === "ADMIN" ? true : false;
-            return result;
-        } else {
-            const error = new Error("USER NOT FOUND");
-            error.statusCode = 401;
-            return error;
-        }
-    } catch (error) {
-        return error;
-    }
-}
+
 // Función para renderizar el panel de administración
 async function getAdmin(req, res) {
     try {
-        const products = await productController.getAll();
+        
+        const products = await productController.getAllProducts();
         //console.log("products: ", products);
 
         const token = req.cookies.authToken;
@@ -228,6 +220,8 @@ async function getAdmin(req, res) {
                 }
             
                 console.log("user get: ", user);
+                console.log("user role: ", user.role);
+
                 if (user.role !== "ADMIN") {
                     const error = new Error("USER NOT ADMIN");
                     error.statusCode = 401;
@@ -237,10 +231,7 @@ async function getAdmin(req, res) {
                     admin = true;
                 }
 
-                req.user = user;
-                
-            
-                
+                req.user = user;      
                 
             } catch (error) {
                 console.log("error en tokenToUser: ", error);
@@ -252,18 +243,20 @@ async function getAdmin(req, res) {
             admin = false;
         }
 
-        console.log("isAdmin: " + isAdmin);
-        console.log("isAuthenticated: " + isAuthenticated);
-        console.log("userName: " + userName);
+       console.log("isAdmin: " + admin);
+        // console.log("isAuthenticated: " + isAuthenticated);
+        // console.log("userName: " + userName);
+
 
         const user = new UserDto(req.user);
+        console.log("userDTO: ", user);
 
-        if (!isAdmin) {
+        if (!admin) {
             res.json404();
         }else{
             res.render('admin', {
                 title: 'Panel de Administración',
-                products: products,
+                //products: products,
                 user: user,
                 isAdmin: admin,
                 isAuthenticated: isAuthenticated,
@@ -282,7 +275,7 @@ async function getAdmin(req, res) {
 async function tokenToUser(token) {
     try {
         const verifydata = verifyTokenUtil(token);
-        console.log("verifydata: ", verifydata._id);
+        console.log("tokentouser"+verifydata._id);
         const user = await userController.getById(verifydata._id);
 
         if (user) {

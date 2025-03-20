@@ -8,6 +8,14 @@ class ProductService extends Services {
         
     }
 
+    async getAllProducts() {
+      try {
+        return await this.dao.getAllProducts();
+      } catch (error) {
+        throw error;
+      }
+    }
+
   
     async getByCode(code) {
       try {

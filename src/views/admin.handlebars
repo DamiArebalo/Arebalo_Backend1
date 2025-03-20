@@ -1,113 +1,90 @@
 <div class="container">
     <h1>Administración</h1>
     <div class="button-bar">
-        <button id="btnAddProduct">Agregar Producto</button>
-        <button id="btnUpdateProduct">Actualizar Producto</button>
-        <button id="btnDeleteProduct">Eliminar Producto</button>
-        <button id="btnPurchaseHistory">Historial de Compras</button>
+        <button class="action-btn" data-target="addProductContent">Agregar Producto</button>
+        <button class="action-btn" data-target="updateProductContent">Actualizar Producto</button>
+        <button class="action-btn" data-target="deleteProductContent">Eliminar Producto</button>
+        <button class="action-btn" data-target="purchaseHistoryContent">Historial de Compras</button>
     </div>
-    
-    <div id="mainContent">
-        <!-- Las secciones dinámicas se cargarán aquí -->
+
+    <!-- Secciones de contenido -->
+    <div class="actionContent" id="addProductContent">
+        <h2>Agregar Nuevo Producto</h2>
+        <form id="productForm" class="form-grid">
+            <div class="form-group">
+                <label for="code">Código</label>
+                <input type="text" id="code" name="code" required />
+            </div>
+            <div class="form-group">
+                <label for="title">Título</label>
+                <input type="text" id="title" name="title" required />
+            </div>
+            <div class="form-group">
+                <label for="priceList">Precio</label>
+                <input type="number" id="priceList" name="priceList" required />
+            </div>
+            <div class="form-group">
+                <label for="stock">Stock</label>
+                <input type="number" id="stock" name="stock" required />
+            </div>
+            <div class="form-group">
+                <label for="description">Descripción</label>
+                <input type="text" id="description" name="description" required />
+            </div>
+            <div class="form-group">
+                <label for="category">Categoría</label>
+                <select id="category" name="category" required>
+                    <option value="">Seleccione una categoría</option>
+                    <option value="Botiquin">Botiquín</option>
+                    <option value="Aromaterapia">Aromaterapia</option>
+                    <option value="Fisico">Físico</option>
+                </select>
+            </div>
+            <button type="submit">Agregar Producto</button>
+        </form>
+    </div>
+    <div class="actionContent" id="updateProductContent">
+        <input class="search-input" type="text" placeholder="Buscar producto" id="searchProduct" /> 
+        <ul id="productList" class="product-list"> 
+
+        </ul>
+    </div>
+    <div class="actionContent" id="deleteProductContent">
+        <div class="searchContent"> 
+            <div class="productSelection" id="search-delete">
+                <!-- Search bar --> 
+                <div class="searchBar"> 
+                    <i class="bi bi-search"></i> 
+                    <input class="search-input" type="text" id="searchInput" placeholder="Search product..."> 
+                </div> 
+                <div class="productDisplay" id="products-delete">
+                    {{#each products}} 
+                        <div class="product"> 
+                            <p>{{name}}</p> 
+                            <p>{{description}}</p> 
+                            <button class="deleteButton" data-id="{{id}}">Delete</button> 
+                        </div> 
+                    {{/each}} 
+                </div> 
+            </div> 
+        </div>
+    </div>
+    <div class="actionContent" id="purchaseHistoryContent">
+        <h2>Historial de Compras</h2>
+        <p>Sección en desarrollo...</p>
     </div>
 </div>
+
+<script src="/static/js/admin.js"></script>
 <script>
-        // Referencias a los botones
-    const btnAddProduct = document.getElementById('btnAddProduct');
-    const btnUpdateProduct = document.getElementById('btnUpdateProduct');
-    const btnDeleteProduct = document.getElementById('btnDeleteProduct');
-    const btnPurchaseHistory = document.getElementById('btnPurchaseHistory');
-    const mainContent = document.getElementById('mainContent');
+    
 
-    // Listeners para cada botón
-    btnAddProduct.addEventListener('click', () => loadAddProduct());
-    btnUpdateProduct.addEventListener('click', () => loadUpdateProduct());
-    btnDeleteProduct.addEventListener('click', () => loadDeleteProduct());
-    btnPurchaseHistory.addEventListener('click', () => loadPurchaseHistory());
+    socket.on('deleteProduct', (data) => {
+   const product = data;
+   console.log("product por eliminar: ", product);
 
-    // Función para cargar la vista de agregar producto
-    function loadAddProduct() {
-        mainContent.innerHTML = `
-            <div class="form-container">
-                <h2 class="form-title">Agregar Nuevo Producto</h2>
-                <form id="productForm" class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="code">Código</label>
-                        <input type="text" id="code" name="code" class="form-input" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="title">Título</label>
-                        <input type="text" id="title" name="title" class="form-input" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="priceList">Precio</label>
-                        <input type="number" id="priceList" name="priceList" class="form-input" min="0" step="0.01" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="stock">Stock</label>
-                        <input type="number" id="stock" name="stock" class="form-input" min="0" required>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label class="form-label" for="description">Descripción</label>
-                        <input type="text" id="description" name="description" class="form-input" required>
-                    </div>
-                    
-                    <div class="form-group full-width">
-                        <label class="form-label" for="category">Categoría</label>
-                        <select id="category" name="category" class="form-select" required>
-                            <option value="">Seleccione una categoría</option>
-                            <option value="Botiquin">Botiquín</option>
-                            <option value="aromaterapia">Aromaterapia</option>
-                            <option value="fisico">fisico</option>
-                        </select>
-                    </div>
-                    
-                    <input type="hidden" id="status" name="status" value="true">
-                    
-                    <div class="form-group full-width">
-                        <button type="submit" class="submit-btn">
-                            <i class="fas fa-plus"></i>
-                            Agregar Producto
-                        </button>
-                    </div>
-                </form>
-            </div>
-        `;
-    }
 
-    // Función para cargar la vista de actualizar producto
-    function loadUpdateProduct() {
-        mainContent.innerHTML = `
-            <div>
-                <input class="search-input" type="text" placeholder="Buscar producto" id="searchProduct" />
-                <ul id="productList" class="product-list">
-                    <!-- Lista dinámica de productos con botones 'Update' -->
-                </ul>
-            </div>
-        `;
-        // Aquí puedes implementar la funcionalidad con WebSockets
-    }
-
-    // Función para cargar la vista de eliminar producto
-    function loadDeleteProduct() {
-        mainContent.innerHTML = `
-            <div>
-                <input type="text" placeholder="Buscar producto" id="searchProductDelete" />
-                <ul id="productDeleteList" class="product-list">
-                    <!-- Lista dinámica de productos con botones 'Eliminar' -->
-                </ul>
-            </div>
-        `;
-        // Aquí puedes implementar la funcionalidad con WebSockets
-    }
-
-    // Función para cargar la vista del historial de compras
-    function loadPurchaseHistory() {
-        mainContent.innerHTML = `<p>Se está trabajando en esta sección.</p>`;
-    }
-
+    });
 </script>
+
+
