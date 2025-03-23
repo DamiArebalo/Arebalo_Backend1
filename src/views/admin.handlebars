@@ -44,10 +44,17 @@
         </form>
     </div>
     <div class="actionContent" id="updateProductContent">
-        <input class="search-input" type="text" placeholder="Buscar producto" id="searchProduct" /> 
-        <ul id="productList" class="product-list"> 
+        <input class="search-input" type="text" placeholder="Buscar producto" id="searchProductUpdate" /> 
+        <div class="productDisplay" id="products-update">
+            {{#each products}} 
+                <div class="product"> 
+                    <p>{{name}}</p> 
+                    <p>{{description}}</p> 
+                    <button class="deleteButton" data-id="{{id}}">Delete</button> 
+                </div> 
+            {{/each}} 
+        </div> 
 
-        </ul>
     </div>
     <div class="actionContent" id="deleteProductContent">
         <div class="searchContent"> 
@@ -55,7 +62,7 @@
                 <!-- Search bar --> 
                 <div class="searchBar"> 
                     <i class="bi bi-search"></i> 
-                    <input class="search-input" type="text" id="searchInput" placeholder="Search product..."> 
+                    <input class="search-input" type="text" id="searchInputDelete" placeholder="Search product..."> 
                 </div> 
                 <div class="productDisplay" id="products-delete">
                     {{#each products}} 
@@ -86,5 +93,7 @@
 
     });
 </script>
+
+
 
 
