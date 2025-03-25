@@ -40,7 +40,7 @@ export  class Services {
     }
     async getById(id) {
       try {
-        console.log("id getById", id, this.dao);
+        //console.log("id getById", id, this.dao);
         const response = await this.dao.getById(id);
         //console.log("response", response);
         if (!response) throw new Error("Error getById");

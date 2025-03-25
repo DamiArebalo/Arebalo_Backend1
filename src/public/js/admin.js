@@ -7,6 +7,8 @@ const $$productsDivDelete = document.querySelector("#products-delete");
 const $$productsDivUpdate = document.querySelector("#products-update");
 const $$searchProducts = document.querySelector("#search-delete");
 const $$deleteProducts = document.querySelectorAll(".deleteButton");
+const $$productForm = document.querySelector("#productForm");
+const $$addProduct = document.querySelector("#addProduct");
 
 // Obtener referencia a los botones y las secciones
 const actionButtons = document.querySelectorAll('.action-btn');
@@ -383,6 +385,76 @@ $$searchInputUpdate.addEventListener("keyup", async (event) => {
 
    
 });
+
+$$addProduct.addEventListener("click", async (event) => {
+   event.preventDefault();
+
+   const formAdd = $$productForm;
+   const dataFormu = Object.fromEntries(new FormData(formAdd));
+   console.log("dataFormu: ", dataFormu);
+
+   const category = await getCategory(dataFormu.category);
+   dataFormu.category = category.response.response.toLowerCase();
+
+   const jsonData = JSON.stringify(dataFormu);  
+
+   alertAdd(jsonData);
+});
+
+async function alertAdd(data) {
+    Swal.fire({
+        title: '¿Estás seguro de que desea agregar el producto?',
+        text: 'Esta acción no se puede deshacer.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, agregar producto',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+    }).then(result => {
+        //si el usuario confirma la acción, ejecutar la función thenLogout
+        if (result.isConfirmed) {
+            addProduct(data)
+        }
+    });
+}
+
+async function addProduct(data) {   
+    const options = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: data
+    };
+    console.log("options: ", options);
+    const response = await fetch(`/api/products`, options);
+    if (response.ok) {
+        Swal.fire({
+            title: '¡Producto agregado!',
+            text: 'El producto ha sido agregado correctamente.',
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+        }).then(() => {
+            window.location.href = '/views/home/admin';
+        });
+    } else {
+        Swal.fire({
+            title: '¡Error!',
+            text: 'No se pudo agregar el producto.',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+        });
+    }
+}
+
+
+
+
+
 
 
 

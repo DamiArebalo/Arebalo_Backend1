@@ -17,7 +17,7 @@ export default async function validateUser(req, res, next) {
 
 async function getUserByToken(token) {
     const verifydata = verifyTokenUtil(token);
-    console.log("validate user: ", verifydata);
+    //console.log("validate user: ", verifydata);
     let id = verifydata._id;
     
     const user = await userController.getById(id);

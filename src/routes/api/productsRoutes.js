@@ -105,8 +105,22 @@ async function updateProduct(req, res) {
 // Función para crear un producto
 async function createProduct(req, res) {
     const datoFormu = req.body;
+    let category = req.query.category;
+    console.log("categoryName: ", category);
 
-    datoFormu.category = await categoryController.getByName(datoFormu.category);
+    console.log("datoFormu: ", datoFormu);
+    console.log("datoFormu.category: ", datoFormu.category);
+
+    if (category!= undefined || category != null){
+        console.log("entra cat");
+
+        category = await categoryController.getByName(category);
+        console.log("category: ", category);
+        datoFormu.category = category._id;
+        console.log("datoFormu.category: ", datoFormu.category);
+
+    } 
+
 
     // Creación del nuevo producto
     const newProduct = await productController.create({
@@ -115,7 +129,7 @@ async function createProduct(req, res) {
         priceList: datoFormu.priceList,
         description: datoFormu.description,
         stock: datoFormu.stock,
-        category: datoFormu.category._id
+        category: datoFormu.category
     });
 
 

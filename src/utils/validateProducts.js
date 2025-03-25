@@ -20,6 +20,8 @@ function validateProducts(priceList, description, stock) {
 
 // Middleware para validar la data
 const midVal = (req, res, next) => {
+    console.log("req.body: ", req.body);
+
     if (!validateProducts(req.body.priceList, req.body.description, req.body.stock)) {
         return res.status(406).send({ error: "Los datos ingresados no son válidos", data: null });
     }
