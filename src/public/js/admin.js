@@ -37,6 +37,13 @@ async function getProducts() {
     return data;
 }
 
+async function getCategory(name){
+    const response = await fetch(`/api/products/category/name/${name}`);
+    const data = await response.json();
+    console.log("data category: ", data);
+    return data;
+}
+
 
 async function cardDelete(product) {
     // Crear un div
@@ -201,7 +208,37 @@ async function deleteProduct(productId) {
     }
 }
 
-async function alertUpdate(product) {
+async function alertUpdate(productID) {
+
+    const formUpdate = document.querySelector('#productFormUpdate');
+
+
+    const dataFormuUpdate = new FormData(formUpdate);
+    const dataFormu = Object.fromEntries(dataFormuUpdate);
+    
+    //convierto nombre de la categoría a id
+    const  category = await getCategory(dataFormu.category);
+    dataFormu.category = category.response.response;
+
+
+    console.log("dataFormuUpdate: ", dataFormu.category);
+    const jsonData = JSON.stringify(dataFormu);
+    
+
+    const options = {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: jsonData
+    };
+
+    console.log("options: ", options);
+
+    // Eliminar cualquier popup existente
+    const existingPopUp = document.querySelector('.popUpDiv');
+    const existingOverlay = document.querySelector('.popup-overlay');
+    if (existingPopUp) existingPopUp.remove();
+    if (existingOverlay) existingOverlay.remove();
+
     Swal.fire({
         title: '¿Estás seguro de que desea actualizar el producto?',
         text: 'Esta acción no se puede deshacer.',
@@ -214,29 +251,12 @@ async function alertUpdate(product) {
     }).then(result => {
         //si el usuario confirma la acción, ejecutar la función thenLogout
         if (result.isConfirmed) {
-            updateProduct(product)
+            updateProduct(productID, options)
         }
     });
 }
 
-async function updateProduct(productId) {
-
-
-    const dataFormuUpdate = new FormData();
-    dataFormuUpdate.append('productId', productId);
-    dataFormuUpdate.append('title', $$titleUpdate.value);
-    dataFormuUpdate.append('description', $$descriptionUpdate.value);
-    dataFormuUpdate.append('priceList', $$priceListUpdate.value);
-    dataFormuUpdate.append('stock', $$stockUpdate.value);
-    dataFormuUpdate.append('category', $$categoryUpdate.value);
-
-    console.log("dataFormuUpdate: ", dataFormuUpdate);
-
-    const options = {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: dataFormuUpdate
-    };
+async function updateProduct(productId, options) {
 
     const response = await fetch(`/api/products/${productId}`, options);
     if (response.ok) {
@@ -292,10 +312,6 @@ async function popUpUdateProduct(productID) {
         <h2>Actualizar Producto</h2>
         <form id="productFormUpdate" class="form-grid">
             <div class="form-group">
-                <label for="code">Código</label>
-                <input type="text" id="code" name="code" value="${product.code}" required />
-            </div>
-            <div class="form-group">
                 <label for="title">Título</label>
                 <input type="text" id="title" name="title" value="${product.title}" required />
             </div>
@@ -320,7 +336,7 @@ async function popUpUdateProduct(productID) {
                     <option value="Fisico" ${categoryName == "fisico" ? "selected" : ""}>Físico</option>
                 </select>
             </div>
-            <button type="submit">Actualizar Producto</button>
+            <button id="updateProduct" type="submit">Actualizar Producto</button>
         </form>
     `;
 
@@ -330,6 +346,11 @@ async function popUpUdateProduct(productID) {
     document.querySelector('.close-button').addEventListener('click', () => {
         popUpDiv.remove();
         overlayDiv.remove(); // Eliminar el fondo oscuro también
+    });
+
+    document.querySelector('#updateProduct').addEventListener('click', async (event) => {
+        event.preventDefault();
+        alertUpdate(productID);
     });
 }
 
@@ -354,11 +375,12 @@ $$searchInputUpdate.addEventListener("keyup", async (event) => {
         button.addEventListener("click", (event) => {
             const productId = event.target.dataset.id;
             console.log("productId: ", productId);
-
-
             popUpUdateProduct(productId);
+
         });
     });
+
+   
 });
 
 
