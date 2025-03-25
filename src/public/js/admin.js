@@ -38,7 +38,8 @@ async function getProducts() {
 }
 
 async function getCategory(name){
-    const response = await fetch(`/api/products/category/name/${name}`);
+    const nameCategory = name.toLowerCase();
+    const response = await fetch(`/api/products/category/name/${nameCategory}`);
     const data = await response.json();
     console.log("data category: ", data);
     return data;
@@ -218,7 +219,7 @@ async function alertUpdate(productID) {
     
     //convierto nombre de la categoría a id
     const  category = await getCategory(dataFormu.category);
-    dataFormu.category = category.response.response;
+    dataFormu.category = category.response.response.toLowerCase();
 
 
     console.log("dataFormuUpdate: ", dataFormu.category);
@@ -331,9 +332,9 @@ async function popUpUdateProduct(productID) {
                 <label for="category">Categoría</label>
                 <select id="category" name="category" required>
                     <option value="">Seleccione una categoría</option>
-                    <option value="Botiquin" ${categoryName == "Botiquin" ? "selected" : ""}>Botiquín</option>
+                    <option value="Botiquin" ${categoryName == "Botiquin" ? "selected" : ""}>Botiquin</option>
                     <option value="Aromaterapia" ${categoryName == "aromaterapia" ? "selected" : ""}>Aromaterapia</option>
-                    <option value="Fisico" ${categoryName == "fisico" ? "selected" : ""}>Físico</option>
+                    <option value="Fisico" ${categoryName == "fisico" ? "selected" : ""}>Fisico</option>
                 </select>
             </div>
             <button id="updateProduct" type="submit">Actualizar Producto</button>
